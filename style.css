@@ -1,0 +1,92 @@
+<style>
+
+body{
+    background: radial-gradient(circle at top, #0b1220, #050816 60%, #02040a);
+    color:white;
+    font-family:Arial,sans-serif;
+    padding:30px;
+    overflow-x:hidden;
+}
+
+h1{
+    color:#3b82f6;
+
+    text-shadow:
+    0 0 10px #3b82f6;
+
+    margin-bottom:30px;
+}
+
+.wrapper{
+    display:flex;
+    gap:30px;
+    align-items:flex-start;
+}
+
+#bookings{
+    flex:2;
+}
+
+.side-panel{
+    flex:1;
+    position:sticky;
+    top:20px;
+}
+
+.booking{
+    background:#0f172a;
+    border:2px solid #2563eb;
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.booking h2{
+    color:#60a5fa;
+    margin-bottom:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    color:white;
+    margin-top:10px;
+    background:#2563eb;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.free-btn{
+    background:#16a34a;
+}
+
+.delete-btn{
+    background:#dc2626;
+}
+
+select{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#1e293b;
+    color:white;
+}
+
+@media(max-width:900px){
+
+    .wrapper{
+        flex-direction:column;
+    }
+
+    .side-panel{
+        width:100%;
+    }
+}
+
+</style>

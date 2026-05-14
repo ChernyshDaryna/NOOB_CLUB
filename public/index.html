@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOOB PC</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#050816;
+    color:white;
+    min-height:100vh;
+}
+
+/* ЛОГО */
+
+.logo{
+    text-align:center;
+    font-size:75px;
+    font-weight:bold;
+    color:#3b82f6;
+    margin-top:25px;
+    letter-spacing:10px;
+
+    text-shadow:
+    0 0 5px #3b82f6,
+    0 0 15px #3b82f6,
+    0 0 30px #2563eb,
+    0 0 60px #2563eb;
+}
+
+.subtitle{
+    text-align:center;
+    color:#94a3b8;
+    margin-top:10px;
+    margin-bottom:50px;
+    font-size:18px;
+}
+
+/* СІТКА */
+
+.room{
+    width:95%;
+    max-width:1400px;
+    margin:auto;
+
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:25px;
+
+    padding-bottom:60px;
+}
+
+/* КАРТКИ */
+
+.card{
+    background:#0f172a;
+    border:2px solid #1e3a8a;
+    border-radius:20px;
+    padding:20px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
+    min-height:220px;
+
+    transition:0.3s;
+
+    box-shadow:
+    0 0 10px rgba(59,130,246,0.2);
+}
+
+.card:hover{
+    transform:translateY(-8px);
+
+    box-shadow:
+    0 0 15px rgba(59,130,246,0.5),
+    0 0 35px rgba(59,130,246,0.3);
+}
+
+.card h2{
+    color:#60a5fa;
+    margin-bottom:15px;
+}
+
+.status{
+    margin:20px 0;
+    color:#22c55e;
+    font-weight:bold;
+}
+
+button{
+    width:100%;
+    padding:13px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#2563eb;
+    color:white;
+
+    font-size:16px;
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+button:hover{
+    background:#3b82f6;
+
+    box-shadow:
+    0 0 10px #3b82f6,
+    0 0 25px #3b82f6;
+}
+
+/* МОДАЛЬНЕ ВІКНО */
+
+.modal{
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,0.8);
+
+    display:none;
+    justify-content:center;
+    align-items:center;
+
+    z-index:1000;
+}
+
+.modal-content{
+    width:90%;
+    max-width:420px;
+
+    background:#0f172a;
+    border:2px solid #2563eb;
+    border-radius:20px;
+
+    padding:25px;
+}
+
+.modal-content h2{
+    margin-bottom:20px;
+    color:#60a5fa;
+}
+
+input,
+select{
+    width:100%;
+    padding:12px;
+
+    margin-bottom:15px;
+
+    border:none;
+    border-radius:10px;
+
+    background:#1e293b;
+    color:white;
+}
+
+.close-btn{
+    background:#dc2626;
+    margin-top:10px;
+}
+
+/* АДМІН */
+
+.admin-panel{
+    width:95%;
+    max-width:500px;
+
+    margin:70px auto;
+
+    background:#0f172a;
+    border:2px solid #1e3a8a;
+
+    border-radius:20px;
+    padding:30px;
+}
+
+.admin-panel h2{
+    color:#60a5fa;
+    margin-bottom:20px;
+    text-align:center;
+}
+
+.admin-panel button{
+    margin-top:10px;
+}
+
+/* АДАПТИВ */
+
+@media(max-width:1100px){
+
+    .room{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:700px){
+
+    .room{
+        grid-template-columns:1fr;
+    }
+
+    .logo{
+        font-size:50px;
+    }
+
+}
+/* ===== ПРАЙС КРАСИВЫЙ (INDEX FIX) ===== */
+
+.price-section{
+    width:95%;
+    max-width:1200px;
+    margin:60px auto;
+    padding:20px;
+}
+
+.price-title{
+    text-align:center;
+    font-size:32px;
+    margin-bottom:25px;
+    color:#60a5fa;
+    text-shadow:0 0 15px #3b82f6;
+}
+
+.price-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.price-card{
+    background:linear-gradient(145deg, #0f172a, #0b1220);
+    border:1px solid #1e3a8a;
+    border-radius:18px;
+    padding:20px;
+
+    box-shadow:0 0 15px rgba(59,130,246,0.15);
+    transition:0.3s;
+}
+
+.price-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 25px rgba(59,130,246,0.35);
+}
+
+.price-card h3{
+    color:#93c5fd;
+    margin-bottom:15px;
+    text-align:center;
+}
+
+.price-item{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid #1e293b;
+    font-size:15px;
+}
+
+.price-item:last-child{
+    border-bottom:none;
+}
+
+.price-item span{
+    color:#cbd5e1;
+}
+
+.price-item b{
+    color:#22c55e;
+}
+
+/* ЧАС РОБОТИ */
+.work-hours{
+    margin-top:25px;
+    text-align:center;
+    padding:20px;
+
+    background:#0f172a;
+    border:1px solid #1e3a8a;
+    border-radius:15px;
+
+    color:#94a3b8;
+}
+
+.work-hours h3{
+    color:#60a5fa;
+    margin-bottom:10px;
+}
+
+/* МОБИЛКА */
+@media(max-width:700px){
+    .price-grid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="logo">NÒÓB</div>
+
+<div class="subtitle">
+    Комп'ютерний клуб нового покоління
+</div>
+
+<div class="room">
+
+    <!-- ВЕРХ -->
+
+    <div class="card">
+        <h2>🎮 PS5 #2</h2>
+
+        <div class="status" id="status-PS5-2">
+            ● Вільна
+        </div>
+
+        <button onclick="openBooking('PS5 #2')">
+            Забронювати
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>💻 PC #2</h2>
+
+        <div class="status" id="status-PC-2">
+            ● Вільний
+        </div>
+
+        <button onclick="openBooking('PC #2')">
+            Забронювати
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>💻 PC #4</h2>
+
+        <div class="status" id="status-PC-4">
+            ● Вільний
+        </div>
+
+        <button onclick="openBooking('PC #4')">
+            Забронювати
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>💻 PC #6</h2>
+
+        <div class="status" id="status-PC-6">
+            ● Вільний
+        </div>
+
+        <button onclick="openBooking('PC #6')">
+            Забронювати
+        </button>
+    </div>
+
+    <!-- НИЗ -->
+
+    <div class="card">
+        <h2>🎮 PS5 #1</h2>
+
+        <div class="status" id="status-PS5-1">
+            ● Вільна
+        </div>
+
+        <button onclick="openBooking('PS5 #1')">
+            Забронювати
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>💻 PC #1</h2>
+
+        <div class="status" id="status-PC-1">
+            ● Вільний
+        </div>
+
+        <button onclick="openBooking('PC #1')">
+            Забронювати
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>💻 PC #3</h2>
+
+        <div class="status" id="status-PC-3">
+            ● Вільний
+        </div>
+
+        <button onclick="openBooking('PC #3')">
+            Забронювати
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>💻 PC #5</h2>
+
+        <div class="status" id="status-PC-5">
+            ● Вільний
+        </div>
+
+        <button onclick="openBooking('PC #5')">
+            Забронювати
+        </button>
+    </div>
+
+</div>
+
+<!-- МОДАЛЬНЕ ВІКНО -->
+
+<div class="modal" id="bookingModal">
+
+    <div class="modal-content">
+
+        <h2 id="bookingTitle">
+            Бронювання
+        </h2>
+
+        <input type="text" id="name" placeholder="Ваше ім'я">
+
+        <input type="tel" id="phone" placeholder="Номер телефону">
+
+        <input
+            type="date"
+            id="date"
+            onkeydown="return false"
+            onpaste="return false"
+        >
+        <select id="hour">
+            <option value="">Оберіть годину</option>
+        </select>
+
+        <button onclick="confirmBooking()">
+            Підтвердити бронювання
+        </button>
+
+        <button class="close-btn" onclick="closeModal()">
+            Закрити
+        </button>
+
+    </div>
+
+</div>
+
+<!-- АДМІН -->
+
+<div class="admin-panel">
+
+    <h2>
+        Вхід для адміністратора
+    </h2>
+
+    <input type="email" id="adminEmail" placeholder="Пошта">
+
+    <input type="password" id="adminPassword" placeholder="Пароль">
+
+    <button onclick="adminLogin()">
+        Увійти
+    </button>
+
+</div>
+<div class="price-section">
+
+    <h2 class="price-title">
+        💰 ПРАЙС
+    </h2>
+
+    <div class="price-grid">
+
+        <!-- ПН-ЧТ ПК -->
+
+        <div class="price-card">
+
+            <h3>🖥 ПН–ЧТ • ПК</h3>
+
+            <div class="price-item">
+                <span>1 година</span>
+                <b>70 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>2 години</span>
+                <b>130 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>3 години</span>
+                <b>180 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>3+ годин</span>
+                <b>60 грн/год</b>
+            </div>
+
+        </div>
+
+        <!-- ПН-ЧТ PS -->
+
+        <div class="price-card">
+
+            <h3>🎮 ПН–ЧТ • PS5</h3>
+
+            <div class="price-item">
+                <span>1 година</span>
+                <b>120 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>2 години</span>
+                <b>210 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>3 години</span>
+                <b>300 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>3+ годин</span>
+                <b>100 грн/год</b>
+            </div>
+
+        </div>
+
+        <!-- ПТ-НД ПК -->
+
+        <div class="price-card">
+
+            <h3>🖥 ПТ–НД • ПК</h3>
+
+            <div class="price-item">
+                <span>1 година</span>
+                <b>80 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>2 години</span>
+                <b>150 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>3 години</span>
+                <b>210 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>3+ годин</span>
+                <b>70 грн/год</b>
+            </div>
+
+        </div>
+
+        <!-- ПТ-НД PS -->
+
+        <div class="price-card">
+
+            <h3>🎮 ПТ–НД • PS5</h3>
+
+            <div class="price-item">
+                <span>1 година</span>
+                <b>140 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>2 години</span>
+                <b>260 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>3 години</span>
+                <b>360 грн</b>
+            </div>
+
+            <div class="price-item">
+                <span>3+ годин</span>
+                <b>120 грн/год</b>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="work-hours">
+
+        <h3>⏰ Час роботи</h3>
+
+        <p>ПН–ЧТ: 12:00 – 22:00</p>
+
+        <p>ПТ–НД: 10:00 – 22:00</p>
+
+    </div>
+
+</div>
+<script>
+
+let selectedPC = "";
+
+/* =======================
+   ЕЛЕМЕНТИ
+======================= */
+
+const dateInput = document.getElementById("date");
+const hourSelect = document.getElementById("hour");
+
+/* =======================
+   ДАТА
+======================= */
+
+const today = new Date();
+
+const currentYear = today.getFullYear();
+
+const maxDate = new Date();
+maxDate.setDate(today.getDate() + 7);
+
+dateInput.min = today.toISOString().split("T")[0];
+dateInput.max = maxDate.toISOString().split("T")[0];
+
+/* =======================
+   ГОДИНИ
+======================= */
+
+function updateHours(){
+
+    hourSelect.innerHTML =
+        '<option value="">Оберіть годину</option>';
+
+    if(!dateInput.value) return;
+
+    const selectedDate =
+        new Date(dateInput.value);
+
+    const now = new Date();
+
+    const day =
+        selectedDate.getDay();
+
+    let startHour =
+        (day === 0 || day === 6)
+        ? 10
+        : 12;
+
+    let endHour = 21;
+
+    for(let i = startHour; i <= endHour; i++){
+
+        if(
+            selectedDate.toDateString() === now.toDateString()
+            &&
+            i <= now.getHours()
+        ){
+            continue;
+        }
+
+        let option =
+            document.createElement("option");
+
+        option.value = i;
+        option.textContent = i + ":00";
+
+        hourSelect.appendChild(option);
+    }
+}
+
+dateInput.addEventListener(
+    "change",
+    updateHours
+);
+
+/* =======================
+   ВІДКРИТИ МОДАЛКУ
+======================= */
+
+function openBooking(pc){
+
+    if(isBusy(pc)){
+
+        alert("❌ Цей комп'ютер зараз зайнятий");
+        return;
+    }
+
+    selectedPC = pc;
+
+    document.getElementById(
+        "bookingTitle"
+    ).innerText =
+        "Бронювання " + pc;
+
+    document.getElementById(
+        "bookingModal"
+    ).style.display = "flex";
+}
+
+/* =======================
+   ЗАКРИТИ МОДАЛКУ
+======================= */
+
+function closeModal(){
+
+    document.getElementById(
+        "bookingModal"
+    ).style.display = "none";
+
+    document.getElementById("name").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("date").value = "";
+
+    hourSelect.innerHTML =
+        '<option value="">Оберіть годину</option>';
+}
+
+/* =======================
+   БРОНЮВАННЯ
+======================= */
+
+function confirmBooking(){
+
+    const name =
+        document.getElementById("name").value;
+
+    const phone =
+        document.getElementById("phone").value;
+
+    const date =
+        document.getElementById("date").value;
+
+    const hour =
+        document.getElementById("hour").value;
+
+    if(!name || !phone || !date || !hour){
+
+        alert("Заповніть всі поля");
+        return;
+    }
+
+    const selectedDate =
+        new Date(date);
+
+    const now =
+        new Date();
+
+    /* тільки поточний рік */
+
+    if(
+        selectedDate.getFullYear()
+        !==
+        currentYear
+    ){
+
+        alert("❌ Тільки поточний рік");
+        return;
+    }
+
+    /* минулий час */
+
+    const fullTime =
+        new Date(date);
+
+    fullTime.setHours(Number(hour));
+
+    if(fullTime < now){
+
+        alert("❌ Не можна бронювати минулий час");
+        return;
+    }
+
+    /* робочий час */
+
+    const day =
+        selectedDate.getDay();
+
+    let startHour =
+        (day === 0 || day === 6)
+        ? 10
+        : 12;
+
+    if(hour < startHour || hour > 21){
+
+        alert("❌ Клуб зачинений");
+        return;
+    }
+
+    let bookings =
+        JSON.parse(
+            localStorage.getItem("bookings")
+        ) || [];
+
+    /* вже заброньовано */
+
+    const exists =
+        bookings.find(b =>
+
+            b.pc === selectedPC &&
+            b.date === date &&
+            b.hour === hour
+        );
+
+    if(exists){
+
+        alert("❌ Цей час вже зайнятий");
+        return;
+    }
+
+    bookings.push({
+
+        pc: selectedPC,
+        name,
+        phone,
+        date,
+        hour
+    });
+
+    localStorage.setItem(
+        "bookings",
+        JSON.stringify(bookings)
+    );
+
+    alert("✅ Бронювання створено");
+
+    closeModal();
+}
+
+/* =======================
+   АДМІН ВХІД
+======================= */
+
+function adminLogin(){
+
+    const email =
+        document.getElementById("adminEmail").value;
+
+    const password =
+        document.getElementById("adminPassword").value;
+
+    if(
+        email === "caftershift@gmail.com"
+        &&
+        password === "123"
+    ){
+
+        window.location.href = "admin.html";
+    }
+    else{
+
+        alert("❌ Невірні дані");
+    }
+}
+
+/* =======================
+   ЗАЙНЯТІ ПК
+======================= */
+
+function getBusyPCs(){
+
+    return JSON.parse(
+        localStorage.getItem("busyPCs")
+    ) || [];
+}
+
+function isBusy(pc){
+
+    const busy =
+        getBusyPCs();
+
+    const now =
+        new Date();
+
+    for(let b of busy){
+
+        if(b.pc !== pc) continue;
+
+        if(b.type === "time"){
+
+            let end =
+                new Date(b.until);
+
+            if(now < end){
+                return true;
+            }
+        }
+
+        if(b.type === "timer"){
+            return true;
+        }
+
+        if(!b.type){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/* =======================
+   СТАТУСИ ПК
+======================= */
+
+function updatePCStatuses(){
+
+    const busyPCs =
+        JSON.parse(
+            localStorage.getItem("busyPCs")
+        ) || [];
+
+    const all = [
+
+        "PC #1",
+        "PC #2",
+        "PC #3",
+        "PC #4",
+        "PC #5",
+        "PC #6",
+        "PS5 #1",
+        "PS5 #2"
+    ];
+
+    all.forEach(pc => {
+
+        const cleanId =
+            pc.replace(" #","-");
+
+        const el =
+            document.getElementById(
+                "status-" + cleanId
+            );
+
+        if(!el) return;
+
+        const busy =
+            busyPCs.find(x => x.pc === pc);
+
+        if(busy){
+
+            el.innerHTML =
+                "● Зайнятий";
+
+            el.style.color =
+                "#ef4444";
+        }
+        else{
+
+            el.innerHTML =
+                "● Вільний";
+
+            el.style.color =
+                "#22c55e";
+        }
+    });
+}
+
+updatePCStatuses();
+
+setInterval(
+    updatePCStatuses,
+    2000
+);
+
+/* =======================
+   ЗАКРИТТЯ ПО ФОНУ
+======================= */
+
+window.onclick = function(event){
+
+    const modal =
+        document.getElementById(
+            "bookingModal"
+        );
+
+    if(event.target === modal){
+
+        closeModal();
+    }
+}
+
+</script>
+
+</body>
+</html>
