@@ -212,7 +212,7 @@ select{
     margin-top:10px;
 }
 
-/* АДАПТИВ */
+/* АДАКТИВ */
 
 @media(max-width:1100px){
 
@@ -277,7 +277,7 @@ select{
     text-align:center;
 }
 
-.price-item{
+.price-section .price-item{
     display:flex;
     justify-content:space-between;
     padding:10px 0;
@@ -285,15 +285,15 @@ select{
     font-size:15px;
 }
 
-.price-item:last-child{
+.price-section .price-item:last-child{
     border-bottom:none;
 }
 
-.price-item span{
+.price-section .price-item span{
     color:#cbd5e1;
 }
 
-.price-item b{
+.price-section .price-item b{
     color:#22c55e;
 }
 
@@ -699,7 +699,7 @@ window.openBooking = function(pc) {
 window.closeModal = function() {
     document.getElementById("bookingModal").style.display = "none";
     document.getElementById("name").value = "";
-    document.getElementById("phone").value = "";
+    document.getElementById("phone").value = ""; // Теперь полностью очищаем поле телефона
     document.getElementById("date").value = "";
     hourSelect.innerHTML = '<option value="">Оберіть годину</option>';
 }
@@ -780,7 +780,7 @@ window.confirmBooking = async function() {
         closeModal();
     } catch (error) {
         console.error("Помилка бронування: ", error);
-        alert("❌ Сталася помилка при з'єднанні з базою даних");
+        alert("❌ Сталася помилка при з'єднанні з базою данных");
     }
 }
 
