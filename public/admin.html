@@ -352,13 +352,26 @@ select{
 
 <script type="module">
 import { db } from "./firebase.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import { 
     collection, 
-    onSnapshot, 
+    getDocs, 
     doc, 
     deleteDoc, 
     setDoc 
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+// ====== ЗАХИСТ СТОРІНКИ (ЖЕСТКАЯ ПРОВЕРКА АВТОРІЗАЦІЇ) ======
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        // Якщо користувач не увійшов в систему — негайно виганяємо його на головну
+        window.location.href = "index.html";
+    } else {
+        console.log("Адмін авторизований:", user.email);
+    }
+});
 
 const bookingsCollection = collection(db, "bookings");
 const pcStatusesCollection = collection(db, "pcStatuses");
@@ -404,7 +417,15 @@ onSnapshot(bookingsCollection, (snapshot) => {
         `;
     });
 });
-
+// Функция для разлогинивания при нажатии на кнопку "Вихід"
+window.logoutAdmin = async function() {
+    try {
+        await signOut(auth); // Firebase стирает токен входа
+        window.location.href = "index.html";
+    } catch (error) {
+        console.error("Помилка при виході:", error);
+    }
+}
 /* =======================
    УДАЛЕНИЕ БРОНИ
 ======================= */
