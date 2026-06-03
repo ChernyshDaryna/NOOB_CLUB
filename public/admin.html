@@ -86,14 +86,13 @@ body{
 
 h1{
     color:#3b82f6;
-    margin-bottom:30px; /* Вернули отступ 30px */
+    margin-bottom:30px;
 
     text-shadow:
     0 0 10px #3b82f6,
     0 0 25px #2563eb;
 }
 
-/* КНОПКА НАЗАД */
 /* КНОПКА НАЗАД (ВЫХОД) В УГЛУ */
 .back-btn {
     position: fixed;
@@ -106,17 +105,18 @@ h1{
     text-decoration: none;
     font-weight: bold;
     font-size: 15px;
-    background: #dc2626; /* Красный цвет */
+    background: #dc2626;
     padding: 10px 18px;
     border: 1px solid #b91c1c;
     border-radius: 10px;
     transition: 0.3s;
-    z-index: 1000; /* Чтобы кнопка всегда была поверх остальных элементов */
+    cursor: pointer;
+    z-index: 1000;
 }
 
 .back-btn:hover {
-    background: #ef4444; /* Более яркий красный при наведении */
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); /* Красное неоновое свечение */
+    background: #ef4444;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
     border-color: #f87171;
 }
 
@@ -244,9 +244,9 @@ select{
 
 <h1>NÒÓB ADMIN</h1>
 
-<a href="/" class="back-btn">
+<button class="back-btn" onclick="logoutAdmin()">
     ⬅ На головну (Вихід)
-</a>
+</button>
 
 <div class="wrapper">
 
@@ -358,7 +358,8 @@ import {
     getDocs, 
     doc, 
     deleteDoc, 
-    setDoc 
+    setDoc,
+    onSnapshot // ИСПРАВЛЕНО: добавили пропущенный импорт onSnapshot!
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 // ====== ЗАХИСТ СТОРІНКИ (ЖЕСТКАЯ ПРОВЕРКА АВТОРІЗАЦІЇ) ======
@@ -396,9 +397,8 @@ onSnapshot(bookingsCollection, (snapshot) => {
 
     snapshot.forEach((documentSnapshot) => {
         const booking = documentSnapshot.data();
-        const id = documentSnapshot.id; // уникальный ID документа в Firebase для удаления
+        const id = documentSnapshot.id; 
 
-        // Подстраиваем вывод под формат времени, который у тебя использовался
         const displayHour = booking.hour ? `${booking.hour}:00` : (booking.time || '-');
 
         container.innerHTML += `
@@ -417,15 +417,17 @@ onSnapshot(bookingsCollection, (snapshot) => {
         `;
     });
 });
+
 // Функция для разлогинивания при нажатии на кнопку "Вихід"
 window.logoutAdmin = async function() {
     try {
-        await signOut(auth); // Firebase стирает токен входа
+        await signOut(auth); 
         window.location.href = "index.html";
     } catch (error) {
         console.error("Помилка при виході:", error);
     }
 }
+
 /* =======================
    УДАЛЕНИЕ БРОНИ
 ======================= */
