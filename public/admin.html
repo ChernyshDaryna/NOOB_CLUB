@@ -354,7 +354,7 @@ select{
 // Мы берём уже готовые, привязанные к твоему проекту db и auth из нашего конфигуратора:
 import { db, auth } from "./firebase.js";
 
-// А из официальной библиотеки берем ТОЛЬКО функции управления сессией (getAuth отсюда убираем!):
+// А из официальной библиотеки берем ТОЛЬКО функции управления сессией:
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import { 
     collection, 
@@ -366,8 +366,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 // ====== ЗАХИСТ СТОРІНКИ (ЖЕСТКАЯ ПРОВЕРКА АВТОРІЗАЦІЇ) ======
-// Строчку const auth = getAuth(); — УДАЛЯЕМ, так как auth уже импортирован выше!
-
 onAuthStateChanged(auth, (user) => {
     if (!user) {
         // Якщо користувач не увійшов в систему — негайно виганяємо його на головну
