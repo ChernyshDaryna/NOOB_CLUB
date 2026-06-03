@@ -86,7 +86,7 @@ body{
 
 h1{
     color:#3b82f6;
-    margin-bottom:20px;
+    margin-bottom:30px; /* Вернули отступ 30px */
 
     text-shadow:
     0 0 10px #3b82f6,
@@ -94,26 +94,30 @@ h1{
 }
 
 /* КНОПКА НАЗАД */
+/* КНОПКА НАЗАД (ВЫХОД) В УГЛУ */
 .back-btn {
+    position: fixed;
+    top: 20px;
+    right: 30px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: #60a5fa;
+    color: white;
     text-decoration: none;
     font-weight: bold;
     font-size: 15px;
-    background: #0f172a;
+    background: #dc2626; /* Красный цвет */
     padding: 10px 18px;
-    border: 1px solid #1e3a8a;
+    border: 1px solid #b91c1c;
     border-radius: 10px;
-    margin-bottom: 25px;
     transition: 0.3s;
+    z-index: 1000; /* Чтобы кнопка всегда была поверх остальных элементов */
 }
 
 .back-btn:hover {
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-    border-color: #3b82f6;
-    color: white;
+    background: #ef4444; /* Более яркий красный при наведении */
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); /* Красное неоновое свечение */
+    border-color: #f87171;
 }
 
 .wrapper{
