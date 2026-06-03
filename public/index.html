@@ -442,15 +442,27 @@ select{
 
         <input type="text" id="name" placeholder="Ваше ім'я">
 
-        <input 
-            type="tel" 
-            id="phone" 
-            value="+380"
-            maxlength="13"
-            placeholder="+380XXXXXXXXX"
-            oninput="this.value = this.value.replace(/[^0-6]/g, '').slice(0,9)"
-            title="Формат: +380XXXXXXXXX"
-        />
+        <div style="position: relative; width: 100%;">
+            <span style="
+                position: absolute; 
+                left: 12px; 
+                top: 38%; 
+                transform: translateY(-50%); 
+                color: #94a3b8; 
+                font-size: 16px; 
+                pointer-events: none;
+                user-select: none;
+            ">+38</span>
+            <input 
+                type="tel" 
+                id="phone" 
+                placeholder="0XXXXXXXXX"
+                maxlength="10"
+                style="padding-left: 45px;"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)"
+                title="Введіть 10 цифр номера телефону (наприклад: 0931234567)"
+            />
+        </div>
 
         <input
             type="date"
@@ -697,14 +709,23 @@ window.closeModal = function() {
 ======================= */
 window.confirmBooking = async function() {
     const name = document.getElementById("name").value;
-    const phone = document.getElementById("phone").value;
+    const phoneInput = document.getElementById("phone").value;
     const date = document.getElementById("date").value;
     const hour = document.getElementById("hour").value;
 
-    if (!name || !phone || !date || !hour) {
+    if (!name || !phoneInput || !date || !hour) {
         alert("Заповніть всі поля");
         return;
     }
+
+    // Проверяем, что введено ровно 10 цифр
+    if (phoneInput.length !== 10) {
+        alert("❌ Номер телефону вказано неповністю! Введіть 10 цифр номера з нулем (наприклад: 0931234567).");
+        return;
+    }
+
+    // Склеиваем жесткий префикс +38 и введённые 10 цифр
+    const phone = "+38" + phoneInput;
 
     const selectedDate = new Date(date);
     const now = new Date();
