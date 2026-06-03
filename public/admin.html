@@ -351,19 +351,22 @@ select{
 </div>
 
 <script type="module">
-import { db } from "./firebase.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+// Мы берём уже готовые, привязанные к твоему проекту db и auth из нашего конфигуратора:
+import { db, auth } from "./firebase.js";
+
+// А из официальной библиотеки берем ТОЛЬКО функции управления сессией (getAuth отсюда убираем!):
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import { 
     collection, 
     getDocs, 
     doc, 
     deleteDoc, 
     setDoc,
-    onSnapshot // ИСПРАВЛЕНО: добавили пропущенный импорт onSnapshot!
+    onSnapshot 
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 // ====== ЗАХИСТ СТОРІНКИ (ЖЕСТКАЯ ПРОВЕРКА АВТОРІЗАЦІЇ) ======
-const auth = getAuth();
+// Строчку const auth = getAuth(); — УДАЛЯЕМ, так как auth уже импортирован выше!
 
 onAuthStateChanged(auth, (user) => {
     if (!user) {
