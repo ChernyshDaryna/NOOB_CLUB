@@ -448,7 +448,7 @@ select{
             value="+380"
             maxlength="13"
             placeholder="+380XXXXXXXXX"
-            oninput="this.value = '+' + this.value.replace(/[^0-6]/g, '').replace(/(?!^\+)\+/g, '').slice(0,12)"
+            oninput="this.value = this.value.replace(/[^0-6]/g, '').slice(0,9)"
             title="Формат: +380XXXXXXXXX"
         />
 
