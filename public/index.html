@@ -629,6 +629,8 @@ select{
 
 <script type="module">
 import { db } from "./firebase.js";
+// Добавляем импорт самой авторизации Firebase:
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js"; 
 import { 
     collection, 
     addDoc, 
@@ -787,14 +789,27 @@ window.confirmBooking = async function() {
 /* =======================
    АДМІН ВХІД
 ======================= */
-window.adminLogin = function() {
+/* =======================
+   АДМІН ВХІД (БЕЗПЕЧНИЙ ЧЕРЕЗ FIREBASE)
+======================= */
+window.adminLogin = async function() {
     const email = document.getElementById("adminEmail").value;
     const password = document.getElementById("adminPassword").value;
 
-    if (email === "admin123@gmail.com" && password === "123") {
+    if (!email || !password) {
+        alert("Заповніть всі поля");
+        return;
+    }
+
+    const auth = getAuth();
+    try {
+        // Проверяем пользователя через официальную базу Firebase
+        await signInWithEmailAndPassword(auth, email, password);
+        // Если пароль верный, Firebase запомнит сессию, и мы перенаправляем в админку
         window.location.href = "admin.html";
-    } else {
-        alert("❌ Невірні дані");
+    } catch (error) {
+        console.error("Помилка входу:", error);
+        alert("❌ Невірні дані або доступ обмежено");
     }
 }
 
