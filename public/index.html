@@ -212,7 +212,7 @@ select{
     margin-top:10px;
 }
 
-/* АДАКТИВ */
+/* АДАПТИВ */
 
 @media(max-width:1100px){
 
@@ -277,7 +277,7 @@ select{
     text-align:center;
 }
 
-.price-section .price-item{
+.price-item{
     display:flex;
     justify-content:space-between;
     padding:10px 0;
@@ -285,15 +285,15 @@ select{
     font-size:15px;
 }
 
-.price-section .price-item:last-child{
+.price-item:last-child{
     border-bottom:none;
 }
 
-.price-section .price-item span{
+.price-item span{
     color:#cbd5e1;
 }
 
-.price-section .price-item b{
+.price-item b{
     color:#22c55e;
 }
 
@@ -442,27 +442,15 @@ select{
 
         <input type="text" id="name" placeholder="Ваше ім'я">
 
-        <div style="position: relative; width: 100%;">
-            <span style="
-                position: absolute; 
-                left: 12px; 
-                top: 38%; 
-                transform: translateY(-50%); 
-                color: #94a3b8; 
-                font-size: 16px; 
-                pointer-events: none;
-                user-select: none;
-            ">+38</span>
-            <input 
-                type="tel" 
-                id="phone" 
-                placeholder="0XXXXXXXXX"
-                maxlength="10"
-                style="padding-left: 45px;"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)"
-                title="Введіть 10 цифр номера телефону (наприклад: 0931234567)"
-            />
-        </div>
+        <input 
+            type="tel" 
+            id="phone" 
+            value="+380"
+            maxlength="13"
+            placeholder="+380XXXXXXXXX"
+            oninput="this.value = '+' + this.value.replace(/[^0-6]/g, '').replace(/(?!^\+)\+/g, '').slice(0,12)"
+            title="Формат: +380XXXXXXXXX"
+        />
 
         <input
             type="date"
@@ -628,9 +616,7 @@ select{
 </div>
 
 <script type="module">
-// ИСПРАВЛЕНО: импортируем auth напрямую из твоего файла конфигурации!
-import { db, auth } from "./firebase.js";
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js"; 
+import { db } from "./firebase.js";
 import { 
     collection, 
     addDoc, 
@@ -641,7 +627,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 let selectedPC = "";
-let localBusyPCs = []; 
+let localBusyPCs = []; // Хранилище текущих статусов из БД
 
 const dateInput = document.getElementById("date");
 const hourSelect = document.getElementById("hour");
@@ -701,7 +687,7 @@ window.openBooking = function(pc) {
 window.closeModal = function() {
     document.getElementById("bookingModal").style.display = "none";
     document.getElementById("name").value = "";
-    document.getElementById("phone").value = ""; 
+    document.getElementById("phone").value = "";
     document.getElementById("date").value = "";
     hourSelect.innerHTML = '<option value="">Оберіть годину</option>';
 }
@@ -711,21 +697,14 @@ window.closeModal = function() {
 ======================= */
 window.confirmBooking = async function() {
     const name = document.getElementById("name").value;
-    const phoneInput = document.getElementById("phone").value;
+    const phone = document.getElementById("phone").value;
     const date = document.getElementById("date").value;
     const hour = document.getElementById("hour").value;
 
-    if (!name || !phoneInput || !date || !hour) {
+    if (!name || !phone || !date || !hour) {
         alert("Заповніть всі поля");
         return;
     }
-
-    if (phoneInput.length !== 10) {
-        alert("❌ Номер телефону вказано неповністю! Введіть 10 цифр номера з нулем (наприклад: 0931234567).");
-        return;
-    }
-
-    const phone = "+38" + phoneInput;
 
     const selectedDate = new Date(date);
     const now = new Date();
@@ -752,6 +731,7 @@ window.confirmBooking = async function() {
     }
 
     try {
+        // Проверяем, нет ли уже брони на это время прямо в базе данных
         const bookingsCollection = collection(db, "bookings");
         const q = query(
             bookingsCollection, 
@@ -766,6 +746,7 @@ window.confirmBooking = async function() {
             return;
         }
 
+        // Если всё чисто — добавляем документ в Firebase
         await addDoc(bookingsCollection, {
             pc: selectedPC,
             name: name,
@@ -778,29 +759,21 @@ window.confirmBooking = async function() {
         closeModal();
     } catch (error) {
         console.error("Помилка бронування: ", error);
-        alert("❌ Сталася помилка при з'єднанні з базою данных");
+        alert("❌ Сталася помилка при з'єднанні з базою даних");
     }
 }
 
 /* =======================
-   АДМІН ВХІД (БЕЗПЕЧНИЙ ЧЕРЕЗ FIREBASE)
+   АДМІН ВХІД
 ======================= */
-window.adminLogin = async function() {
+window.adminLogin = function() {
     const email = document.getElementById("adminEmail").value;
     const password = document.getElementById("adminPassword").value;
 
-    if (!email || !password) {
-        alert("Заповніть всі поля");
-        return;
-    }
-
-    try {
-        // Используем общий объект auth
-        await signInWithEmailAndPassword(auth, email, password);
+    if (email === "admin123@gmail.com" && password === "123") {
         window.location.href = "admin.html";
-    } catch (error) {
-        console.error("Помилка входу:", error);
-        alert("❌ Невірні дані або доступ обмежено");
+    } else {
+        alert("❌ Невірні дані");
     }
 }
 
@@ -827,6 +800,7 @@ onSnapshot(pcStatusesCollection, (snapshot) => {
         }
     });
 
+    // После обновления массива статусов сразу обновляем интерфейс на экране
     updatePCStatuses();
 });
 
