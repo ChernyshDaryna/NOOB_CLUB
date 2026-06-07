@@ -771,19 +771,23 @@ window.confirmBooking = async function() {
         );
         const querySnapshot = await getDocs(q);
 
+        console.log("Документів знайдено:", querySnapshot.size);
+        
         if (!querySnapshot.empty) {
             alert("❌ Цей час вже зайнятий");
             return;
         }
 
         // Если всё чисто — добавляем документ в Firebase
-        await addDoc(bookingsCollection, {
+        const docRef = await addDoc(bookingsCollection, {
             pc: selectedPC,
             name: name,
             phone: phone,
             date: date,
             hour: hour
         });
+        
+        console.log("Створено документ:", docRef.id);
 
         alert("✅ Бронювання створено");
         closeModal();
