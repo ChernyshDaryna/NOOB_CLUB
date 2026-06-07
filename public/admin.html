@@ -93,33 +93,6 @@ h1{
     0 0 25px #2563eb;
 }
 
-/* КНОПКА НАЗАД (ВЫХОД) В УГЛУ */
-.back-btn {
-    position: fixed;
-    top: 20px;
-    right: 30px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 15px;
-    background: #dc2626;
-    padding: 10px 18px;
-    border: 1px solid #b91c1c;
-    border-radius: 10px;
-    transition: 0.3s;
-    cursor: pointer;
-    z-index: 1000;
-}
-
-.back-btn:hover {
-    background: #ef4444;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-    border-color: #f87171;
-}
-
 .wrapper{
     display:flex;
     gap:30px;
@@ -244,10 +217,6 @@ select{
 
 <h1>NÒÓB ADMIN</h1>
 
-<button class="back-btn" onclick="logoutAdmin()">
-    ⬅ На головну (Вихід)
-</button>
-
 <div class="wrapper">
 
     <div id="bookings"></div>
@@ -351,29 +320,14 @@ select{
 </div>
 
 <script type="module">
-// Мы берём уже готовые, привязанные к твоему проекту db и auth из нашего конфигуратора:
-import { db, auth } from "./firebase.js";
-
-// А из официальной библиотеки берем ТОЛЬКО функции управления сессией:
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { db } from "./firebase.js";
 import { 
     collection, 
-    getDocs, 
+    onSnapshot, 
     doc, 
     deleteDoc, 
-    setDoc,
-    onSnapshot 
+    setDoc 
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
-// ====== ЗАХИСТ СТОРІНКИ (ЖЕСТКАЯ ПРОВЕРКА АВТОРІЗАЦІЇ) ======
-onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        // Якщо користувач не увійшов в систему — негайно виганяємо його на головну
-        window.location.href = "index.html";
-    } else {
-        console.log("Адмін авторизований:", user.email);
-    }
-});
 
 const bookingsCollection = collection(db, "bookings");
 const pcStatusesCollection = collection(db, "pcStatuses");
@@ -398,8 +352,9 @@ onSnapshot(bookingsCollection, (snapshot) => {
 
     snapshot.forEach((documentSnapshot) => {
         const booking = documentSnapshot.data();
-        const id = documentSnapshot.id; 
+        const id = documentSnapshot.id; // уникальный ID документа в Firebase для удаления
 
+        // Подстраиваем вывод под формат времени, который у тебя использовался
         const displayHour = booking.hour ? `${booking.hour}:00` : (booking.time || '-');
 
         container.innerHTML += `
@@ -418,16 +373,6 @@ onSnapshot(bookingsCollection, (snapshot) => {
         `;
     });
 });
-
-// Функция для разлогинивания при нажатии на кнопку "Вихід"
-window.logoutAdmin = async function() {
-    try {
-        await signOut(auth); 
-        window.location.href = "index.html";
-    } catch (error) {
-        console.error("Помилка при виході:", error);
-    }
-}
 
 /* =======================
    УДАЛЕНИЕ БРОНИ
