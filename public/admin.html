@@ -50,26 +50,26 @@
     0 0 10px rgba(59,130,246,0.2);
 }
 
-.price-box h2{
-    color:#60a5fa;
-    margin-bottom:20px;
-    text-align:center;
+.price-box{
+    background:#0f172a;
+    border:1px solid #2563eb;
+    border-radius:16px;
+    padding:14px;
+    margin-top:18px;
+    font-size:13px;
 }
 
 .price-grid{
     display:grid;
     grid-template-columns:1fr;
-    gap:12px;
+    gap:10px;
 }
 
 .price-card{
     background:#111827;
-
     border:1px solid #1d4ed8;
-
-    border-radius:15px;
-
-    padding:15px;
+    border-radius:12px;
+    padding:10px;
 }
 
 .price-card h3{
@@ -78,9 +78,9 @@
 }
 
 .price-card p{
-    margin-bottom:8px;
+    margin-bottom:5px;
     color:#cbd5e1;
-    line-height:1.5;
+    line-height:1.3;
 }
 
 .work-time{
@@ -142,9 +142,10 @@ h1{
 }
 
 .wrapper{
-    display:flex;
-    gap:30px;
-    align-items:flex-start;
+    display:grid;
+    grid-template-columns:1fr 300px;
+    gap:25px;
+    align-items:start;
 }
 
 /* ЛЕВАЯ ЧАСТЬ */
@@ -156,9 +157,7 @@ h1{
 /* ПРАВАЯ ПАНЕЛЬ */
 
 .side-panel{
-    width:320px;
-    min-width:320px;
-    max-width:320px;
+    width:300px;
     position:sticky;
     top:20px;
 }
@@ -249,9 +248,8 @@ select{
 /* МОБИЛКИ */
 
 @media(max-width:900px){
-
     .wrapper{
-        flex-direction:column;
+        grid-template-columns:1fr;
     }
 
     .side-panel{
@@ -449,11 +447,29 @@ window.deleteBooking = async function(docId) {
    ЗАНЯТЬ ПК
 ======================= */
 window.setBusy = async function(pc) {
-    await setDoc(doc(db, "pcStatuses", pc), { status: "busy" });
+    try {
+        await setDoc(doc(db, "pcStatuses", pc), {
+            status: "busy"
+        });
+
+        alert(pc + " позначено як зайнятий");
+    } catch(error) {
+        console.error("Помилка статусу:", error);
+        alert("❌ Не вдалося зберегти статус");
+    }
 }
 
 window.setFree = async function(pc) {
-    await setDoc(doc(db, "pcStatuses", pc), { status: "free" });
+    try {
+        await setDoc(doc(db, "pcStatuses", pc), {
+            status: "free"
+        });
+
+        alert(pc + " позначено як вільний");
+    } catch(error) {
+        console.error("Помилка статусу:", error);
+        alert("❌ Не вдалося зберегти статус");
+    }
 }
 
 document
