@@ -709,7 +709,7 @@ window.openBooking = function(pc) {
 window.closeModal = function() {
     document.getElementById("bookingModal").style.display = "none";
     document.getElementById("name").value = "";
-    document.getElementById("phone").value = "";
+    document.getElementById("phone").value = "+380";
     document.getElementById("date").value = "";
     hourSelect.innerHTML = '<option value="">Оберіть годину</option>';
 }
@@ -808,6 +808,7 @@ window.adminLogin = function() {
         password === "123"
     ) {
         alert("Вхід успішний");
+        console.log("Переходим в admin.html");
         window.location.href = "admin.html";
     } else {
         alert("❌ Невірні дані");
