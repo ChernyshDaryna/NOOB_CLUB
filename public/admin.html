@@ -422,13 +422,30 @@ window.deleteBooking = async function(docId) {
    ЗАНЯТЬ ПК
 ======================= */
 window.setBusy = async function() {
+
     const pc = document.getElementById("pcSelect").value;
+
     try {
-        await setDoc(doc(pcStatusesCollection, pc), { status: "busy" });
+
+        console.log("Пытаюсь записать:", pc);
+
+        await setDoc(
+            doc(pcStatusesCollection, pc),
+            {
+                status: "busy"
+            }
+        );
+
+        console.log("Успешно записано");
+
         alert(pc + " позначено як зайнятий");
-    } catch (error) {
-        console.error("Помилка: ", error);
+
+    } catch(error) {
+
+        console.error("ПОМИЛКА FIREBASE:", error);
+
     }
+
 }
 
 /* =======================
