@@ -536,10 +536,6 @@ function renderMinutePicker(){
 }
 
 window.openBooking = function(pc){
-    if(isBusy(pc)){
-        alert("❌ Це місце зараз позначено як зайняте");
-        return;
-    }
 
     selectedPC = pc;
     selectedDate = "";
