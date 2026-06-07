@@ -811,11 +811,13 @@ window.adminLogin = function() {
         email === "admin123@gmail.com" &&
         password === "123"
     ) {
+    
+        sessionStorage.setItem("admin", "true");
+    
         alert("Вхід успішний");
-        console.log("Переходим в admin.html");
+    
         window.location.href = "admin.html";
-    } else {
-        alert("❌ Невірні дані");
+    
     }
 }
 
