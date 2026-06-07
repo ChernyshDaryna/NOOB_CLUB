@@ -58,7 +58,8 @@
 
 .price-grid{
     display:grid;
-    gap:15px;
+    grid-template-columns:1fr;
+    gap:12px;
 }
 
 .price-card{
@@ -155,7 +156,9 @@ h1{
 /* ПРАВАЯ ПАНЕЛЬ */
 
 .side-panel{
-    flex:1;
+    width:320px;
+    min-width:320px;
+    max-width:320px;
     position:sticky;
     top:20px;
 }
@@ -391,12 +394,13 @@ const pcStatusesCollection = collection(db, "pcStatuses");
 /* =======================
    ЗАГРУЗКА БРОНЕЙ (REALTIME)
 ======================= */
-import { query, where } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const pcs = ["PC #1","PC #2","PC #3","PC #4","PC #5","PC #6","PS5 #1","PS5 #2"];
 
 function renderDashboard(bookings, statuses) {
-
+    console.log("renderDashboard");
+    console.log(bookings);
+    console.log(statuses);
     const dashboard = document.getElementById("dashboard");
     dashboard.innerHTML = "";
 
