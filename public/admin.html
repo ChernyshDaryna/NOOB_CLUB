@@ -7,6 +7,33 @@
 <title>NOOB ADMIN</title>
 
 <style>
+
+#dashboard {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.pc-card {
+    background: #0f172a;
+    border: 1px solid #2563eb;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.pc-card.busy {
+    border-color: red;
+}
+
+.pc-card.free {
+    border-color: green;
+}
+
+.small {
+    font-size: 13px;
+    opacity: 0.8;
+}
 /* ПРАЙС */
 
 .price-box{
@@ -250,7 +277,7 @@ if(sessionStorage.getItem("admin") !== "true"){
 </button>
 <div class="wrapper">
 
-    <div id="bookings"></div>
+    <div id="dashboard"></div>
 
     <div class="side-panel">
 
@@ -366,21 +393,42 @@ const pcStatusesCollection = collection(db, "pcStatuses");
 /* =======================
    ЗАГРУЗКА БРОНЕЙ (REALTIME)
 ======================= */
-onSnapshot(bookingsCollection, (snapshot) => {
-    const container = document.getElementById("bookings");
-    if (!container) return;
+import { query, where } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-    container.innerHTML = "";
+const pcs = ["PC #1","PC #2","PC #3","PC #4","PC #5","PC #6","PS5 #1","PS5 #2"];
 
-    if (snapshot.empty) {
-        container.innerHTML = `
-            <div class="booking">
-                Бронювань немає
+function renderDashboard(bookings, statuses) {
+
+    const dashboard = document.getElementById("dashboard");
+    dashboard.innerHTML = "";
+
+    pcs.forEach(pc => {
+
+        const pcBookings = bookings.filter(b => b.pc === pc);
+        const status = statuses[pc] || "free";
+
+        const last = pcBookings[pcBookings.length - 1];
+
+        dashboard.innerHTML += `
+            <div class="pc-card ${status}">
+                <h3>${pc} (${status})</h3>
+
+                ${
+                    last ? `
+                        <div class="small">
+                            👤 ${last.name}<br>
+                            📅 ${last.date}<br>
+                            ⏰ ${last.hour}
+                        </div>
+                    ` : `<div class="small">Немає броні</div>`
+                }
+
+                <button onclick="setBusy('${pc}')">Busy</button>
+                <button onclick="setFree('${pc}')">Free</button>
             </div>
         `;
-        return;
-    }
-
+    });
+}
     snapshot.forEach((documentSnapshot) => {
         const booking = documentSnapshot.data();
         const id = documentSnapshot.id; // уникальный ID документа в Firebase для удаления
@@ -421,44 +469,12 @@ window.deleteBooking = async function(docId) {
 /* =======================
    ЗАНЯТЬ ПК
 ======================= */
-window.setBusy = async function() {
-
-    const pc = document.getElementById("pcSelect").value;
-
-    try {
-
-        console.log("Пытаюсь записать:", pc);
-
-        await setDoc(
-            doc(pcStatusesCollection, pc),
-            {
-                status: "busy"
-            }
-        );
-
-        console.log("Успешно записано");
-
-        alert(pc + " позначено як зайнятий");
-
-    } catch(error) {
-
-        console.error("ПОМИЛКА FIREBASE:", error);
-
-    }
-
+window.setBusy = async function(pc) {
+    await setDoc(doc(db, "pcStatuses", pc), { status: "busy" });
 }
 
-/* =======================
-   ОСВОБОДИТЬ ПК
-======================= */
-window.setFree = async function() {
-    const pc = document.getElementById("pcSelect").value;
-    try {
-        await setDoc(doc(pcStatusesCollection, pc), { status: "free" });
-        alert(pc + " тепер вільний");
-    } catch (error) {
-        console.error("Помилка: ", error);
-    }
+window.setFree = async function(pc) {
+    await setDoc(doc(db, "pcStatuses", pc), { status: "free" });
 }
 
 document
@@ -469,6 +485,24 @@ document
 
     window.location.href = "index.html";
 
+});
+
+let allBookings = [];
+let allStatuses = {};
+
+onSnapshot(collection(db, "bookings"), (snap) => {
+    allBookings = snap.docs.map(d => d.data());
+    renderDashboard(allBookings, allStatuses);
+});
+
+onSnapshot(collection(db, "pcStatuses"), (snap) => {
+    allStatuses = {};
+
+    snap.forEach(doc => {
+        allStatuses[doc.id] = doc.data().status;
+    });
+
+    renderDashboard(allBookings, allStatuses);
 });
 </script>
 
