@@ -299,13 +299,11 @@ if(sessionStorage.getItem("admin") !== "true"){
 
             </select>
 
-            <button onclick="setBusy()">
+            <button onclick="setBusy(document.getElementById('pcSelect').value)">
                 Позначити як зайнятий
             </button>
 
-            <button
-                class="free-btn"
-                onclick="setFree()">
+            <button class="free-btn" onclick="setFree(document.getElementById('pcSelect').value)">
 
                 Позначити як вільний
 
@@ -418,7 +416,7 @@ function renderDashboard(bookings, statuses) {
                         <div class="small">
                             👤 ${last.name}<br>
                             📅 ${last.date}<br>
-                            ⏰ ${last.hour}
+                            ⏰ ${last.time}
                         </div>
                     ` : `<div class="small">Немає броні</div>`
                 }
@@ -429,29 +427,6 @@ function renderDashboard(bookings, statuses) {
         `;
     });
 }
-    snapshot.forEach((documentSnapshot) => {
-        const booking = documentSnapshot.data();
-        const id = documentSnapshot.id; // уникальный ID документа в Firebase для удаления
-
-        // Подстраиваем вывод под формат времени, который у тебя использовался
-        const displayHour = booking.hour ? `${booking.hour}:00` : (booking.time || '-');
-
-        container.innerHTML += `
-            <div class="booking">
-                <h2>${booking.pc || 'Невідомий ПК'}</h2>
-                <p><b>Ім'я:</b> ${booking.name || '-'}</p>
-                <p><b>Телефон:</b> ${booking.phone || '-'}</p>
-                <p><b>Дата:</b> ${booking.date || '-'}</p>
-                <p><b>Час:</b> ${displayHour}</p>
-                <button
-                    class="delete-btn"
-                    onclick="deleteBooking('${id}')">
-                    Видалити
-                </button>
-            </div>
-        `;
-    });
-});
 
 /* =======================
    УДАЛЕНИЕ БРОНИ
