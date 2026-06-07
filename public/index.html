@@ -442,15 +442,13 @@ select{
 
         <input type="text" id="name" placeholder="Ваше ім'я">
 
-        <input 
-            type="tel" 
-            id="phone" 
+        <input
+            type="tel"
+            id="phone"
             value="+380"
             maxlength="13"
             placeholder="+380XXXXXXXXX"
-            oninput="this.value = '+' + this.value.replace(/[^0-6]/g, '').replace(/(?!^\+)\+/g, '').slice(0,12)"
-            title="Формат: +380XXXXXXXXX"
-        />
+        >
 
         <input
             type="date"
@@ -628,7 +626,31 @@ import {
 
 let selectedPC = "";
 let localBusyPCs = []; // Хранилище текущих статусов из БД
+const phoneInput = document.getElementById("phone");
 
+phoneInput.addEventListener("input", function() {
+
+    let digits = this.value.replace(/\D/g, "");
+
+    if (!digits.startsWith("380")) {
+        digits = "380";
+    }
+
+    digits = digits.slice(0, 12);
+
+    this.value = "+" + digits;
+});
+
+phoneInput.addEventListener("keydown", function(e){
+
+    if(
+        (e.key === "Backspace" || e.key === "Delete")
+        && this.selectionStart <= 4
+    ){
+        e.preventDefault();
+    }
+
+});
 const dateInput = document.getElementById("date");
 const hourSelect = document.getElementById("hour");
 const today = new Date();
@@ -700,7 +722,11 @@ window.confirmBooking = async function() {
     const phone = document.getElementById("phone").value;
     const date = document.getElementById("date").value;
     const hour = document.getElementById("hour").value;
-
+    if (!/^\+380\d{9}$/.test(phone)) {
+    alert("Введіть правильний номер телефону");
+    return;
+    }
+    
     if (!name || !phone || !date || !hour) {
         alert("Заповніть всі поля");
         return;
@@ -733,6 +759,10 @@ window.confirmBooking = async function() {
     try {
         // Проверяем, нет ли уже брони на это время прямо в базе данных
         const bookingsCollection = collection(db, "bookings");
+        console.log("ПК:", selectedPC);
+        console.log("Дата:", date);
+        console.log("Година:", hour);
+        
         const q = query(
             bookingsCollection, 
             where("pc", "==", selectedPC),
@@ -843,6 +873,7 @@ window.onclick = function(event) {
         closeModal();
     }
 }
+
 </script>
 
 <div class="footer">
