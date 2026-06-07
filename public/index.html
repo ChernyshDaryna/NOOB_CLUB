@@ -14,7 +14,11 @@
 }
 
 body{
-    color:white;
+    background:
+        radial-gradient(circle at top left, rgba(37,99,235,0.45), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(59,130,246,0.45), transparent 28%),
+        #050816;
+    color:black;
     min-height:100vh;
     overflow-x:hidden;
     position:relative;
@@ -266,27 +270,119 @@ input{
     .price-grid{grid-template-columns:1fr;}
     .time-grid{grid-template-columns:repeat(3,1fr);}
 }
+.bg-effects{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+}
+
+.bg-effects span{
+    position:absolute;
+    bottom:-80px;
+    font-size:34px;
+    opacity:0.13;
+    filter:drop-shadow(0 0 12px #3b82f6);
+    animation:floatIcon linear infinite;
+}
+
+.bg-effects span:nth-child(1){
+    left:5%;
+    animation-duration:18s;
+    animation-delay:-2s;
+}
+
+.bg-effects span:nth-child(2){
+    left:17%;
+    animation-duration:24s;
+    animation-delay:-8s;
+}
+
+.bg-effects span:nth-child(3){
+    left:32%;
+    animation-duration:20s;
+    animation-delay:-5s;
+}
+
+.bg-effects span:nth-child(4){
+    left:48%;
+    animation-duration:27s;
+    animation-delay:-12s;
+}
+
+.bg-effects span:nth-child(5){
+    left:62%;
+    animation-duration:19s;
+    animation-delay:-6s;
+}
+
+.bg-effects span:nth-child(6){
+    left:76%;
+    animation-duration:23s;
+    animation-delay:-10s;
+}
+
+.bg-effects span:nth-child(7){
+    left:88%;
+    animation-duration:21s;
+    animation-delay:-4s;
+}
+
+.bg-effects span:nth-child(8){
+    left:95%;
+    animation-duration:28s;
+    animation-delay:-14s;
+}
+
+@keyframes floatIcon{
+    0%{
+        transform:translateY(0) translateX(0) rotate(-25deg) scale(0.8);
+        opacity:0;
+    }
+
+    15%{
+        opacity:0.14;
+    }
+
+    50%{
+        transform:translateY(-55vh) translateX(35px) rotate(10deg) scale(1.2);
+    }
+
+    85%{
+        opacity:0.14;
+    }
+
+    100%{
+        transform:translateY(-120vh) translateX(-35px) rotate(35deg) scale(0.9);
+        opacity:0;
+    }
+}
+
+.logo,
+.subtitle,
+.room,
+.admin-panel,
+.price-section,
+.footer,
+.modal{
+    position:relative;
+    z-index:1;
+}
 </style>
 </head>
 
 <body>
 <div class="bg-effects">
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
-    <div class="glow glow-3"></div>
-
-    <div class="particles-icons">
-        <span>🎮</span>
-        <span>💻</span>
-        <span>🕹️</span>
-        <span>⌨️</span>
-        <span>🎮</span>
-        <span>💻</span>
-        <span>🕹️</span>
-        <span>⌨️</span>
-        <span>🎮</span>
-        <span>💻</span>
-    </div>
+    <span>🎮</span>
+    <span>💻</span>
+    <span>🎮</span>
+    <span>💻</span>
+    <span>🎮</span>
+    <span>💻</span>
+    <span>🎮</span>
+    <span>💻</span>
+</div>
 
     <div class="pixel-rain"></div>
 </div>
