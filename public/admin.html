@@ -76,7 +76,27 @@
     box-sizing:border-box;
     font-family:Arial,sans-serif;
 }
+#logoutBtn{
 
+    position:absolute;
+
+    top:20px;
+
+    right:20px;
+
+    width:auto;
+
+    padding:10px 20px;
+
+    background:#dc2626;
+
+}
+
+#logoutBtn:hover{
+
+    background:#ef4444;
+
+}
 body{
     background:#050816;
     color:white;
@@ -212,11 +232,22 @@ select{
 
 </style>
 </head>
+    
+<script>
 
+if(sessionStorage.getItem("admin") !== "true"){
+
+    window.location.href = "index.html";
+
+}
+
+</script>
 <body>
 
 <h1>NÒÓB ADMIN</h1>
-
+<button id="logoutBtn">
+    Вийти
+</button>
 <div class="wrapper">
 
     <div id="bookings"></div>
@@ -412,6 +443,16 @@ window.setFree = async function() {
         console.error("Помилка: ", error);
     }
 }
+
+document
+.getElementById("logoutBtn")
+.addEventListener("click", () => {
+
+    sessionStorage.removeItem("admin");
+
+    window.location.href = "index.html";
+
+});
 </script>
 
 </body>
