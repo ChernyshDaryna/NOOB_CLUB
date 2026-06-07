@@ -767,10 +767,17 @@ window.confirmBooking = async function() {
    АДМІН ВХІД
 ======================= */
 window.adminLogin = function() {
-    const email = document.getElementById("adminEmail").value;
-    const password = document.getElementById("adminPassword").value;
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value.trim();
 
-    if (email === "admin123@gmail.com" && password === "123") {
+    console.log(email);
+    console.log(password);
+
+    if (
+        email === "admin123@gmail.com" &&
+        password === "123"
+    ) {
+        alert("Вхід успішний");
         window.location.href = "admin.html";
     } else {
         alert("❌ Невірні дані");
