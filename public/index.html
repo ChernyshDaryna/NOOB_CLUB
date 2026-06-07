@@ -607,9 +607,10 @@ window.confirmBooking = async function(){
         alert("✅ Бронювання створено");
         closeModal();
 
-    }catch(error){
-        console.error("Помилка бронювання:", error);
-        alert("❌ Помилка Firebase. Перевір Firestore Rules.");
+    }
+    catch(error){
+    console.error("Помилка бронювання:", error);
+    alert("❌ " + error.code + "\n" + error.message);
     }
 }
 
