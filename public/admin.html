@@ -505,13 +505,21 @@ select{
     padding:22px;
     box-shadow:0 0 20px rgba(59,130,246,0.25);
 }
-
+.suspicious-panel input{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+    border:none;
+    border-radius:12px;
+    background:#1e293b;
+    color:white;
+}
 .admin-settings button{
     width:auto;
-    min-width:170px;
+    min-width:140px;
     display:block;
     margin:10px auto 0;
-    padding:12px 22px;
+    padding:10px 18px;
 }
 
 .suspicious-card{
@@ -586,11 +594,16 @@ if(localStorage.getItem("adminLogin") !== "true"){
             </div>
         
             <div class="suspicious-panel">
-        
+            
                 <h2>⚠️ Підозрілі клієнти</h2>
-        
+            
+                <input
+                    type="text"
+                    id="suspiciousSearch"
+                    placeholder="Пошук за номером">
+            
                 <div id="suspiciousUsersList"></div>
-        
+            
             </div>
         
         </div>
@@ -1018,7 +1031,11 @@ function saveHiddenSuspiciousUsers(){
 function renderSuspiciousUsers(){
 
     const box = document.getElementById("suspiciousUsersList");
-
+    let list = Object.values(users);
+    
+    if(searchText){
+        list = list.filter(u => phoneKey(u.phone).includes(searchText));
+    }
     if(!box) return;
 
     const users = {};
@@ -1082,6 +1099,13 @@ window.hideSuspiciousUser = function(key){
     saveHiddenSuspiciousUsers();
     renderSuspiciousUsers();
 }
+setTimeout(() => {
+    const search = document.getElementById("suspiciousSearch");
+
+    if(search){
+        search.addEventListener("input", renderSuspiciousUsers);
+    }
+}, 500);
 </script>
 
 </body>
