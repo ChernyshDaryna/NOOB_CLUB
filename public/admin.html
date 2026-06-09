@@ -460,6 +460,179 @@ select{
     padding:10px;
     margin-bottom:10px;
 }
+.clients-panel{
+    margin-top:25px;
+    background:linear-gradient(145deg,#0f172a,#0b1220);
+    border:2px solid #2563eb;
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 0 20px rgba(59,130,246,0.25);
+}
+
+.clients-panel h2{
+    color:#60a5fa;
+    text-align:center;
+    margin-bottom:18px;
+    text-shadow:0 0 10px #2563eb;
+}
+
+.clients-panel input{
+    width:100%;
+    padding:13px;
+    margin-bottom:15px;
+    border:none;
+    border-radius:12px;
+    background:#1e293b;
+    color:white;
+}
+
+.client-card{
+    background:#111827;
+    border:1px solid #1d4ed8;
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:10px;
+    display:grid;
+    grid-template-columns:1fr auto auto;
+    gap:8px;
+    align-items:center;
+}
+
+.client-info{
+    font-size:13px;
+    line-height:1.5;
+}
+
+.client-info b{
+    color:#60a5fa;
+}
+
+.client-mini-btn{
+    width:34px;
+    height:34px;
+    padding:0;
+    margin:0;
+    border-radius:50%;
+    font-size:15px;
+}
+
+.client-delete-btn{
+    background:#dc2626;
+}
+
+.client-eye-btn{
+    background:#2563eb;
+}
+
+.client-delete-btn:hover{
+    background:#ef4444;
+}
+
+.client-eye-btn:hover{
+    background:#3b82f6;
+}
+let hiddenClients = JSON.parse(localStorage.getItem("hiddenClients") || "[]");
+
+function saveHiddenClients(){
+    localStorage.setItem("hiddenClients", JSON.stringify(hiddenClients));
+}
+
+function renderClientsList(){
+
+    const box = document.getElementById("clientsList");
+    const search = document.getElementById("clientSearch");
+
+    if(!box) return;
+
+    const searchText = search ? search.value.toLowerCase().trim() : "";
+
+    const clientsMap = {};
+
+    allBookings.forEach(b => {
+        if(!b.phone) return;
+
+        const key = phoneKey(b.phone);
+
+        if(hiddenClients.includes(key)) return;
+
+        if(!clientsMap[key]){
+            clientsMap[key] = {
+                name: b.name || "-",
+                phone: b.phone,
+                total: 0,
+                noShows: 0
+            };
+        }
+
+        clientsMap[key].total++;
+
+        if(b.status === "no_show"){
+            clientsMap[key].noShows++;
+        }
+    });
+    
+setTimeout(() => {
+    const search = document.getElementById("clientSearch");
+
+    if(search){
+        search.addEventListener("input", renderClientsList);
+    }
+}, 500);
+    
+    let clients = Object.values(clientsMap);
+
+    clients = clients.filter(c => {
+        return (
+            c.name.toLowerCase().includes(searchText) ||
+            c.phone.toLowerCase().includes(searchText)
+        );
+    });
+
+    if(clients.length === 0){
+        box.innerHTML = `
+            <p style="text-align:center;color:#94a3b8;">
+                Клієнтів немає
+            </p>
+        `;
+        return;
+    }
+
+    box.innerHTML = clients.map(c => `
+        <div class="client-card">
+
+            <div class="client-info">
+                <b>${c.name}</b><br>
+                📞 ${c.phone}<br>
+                📋 Броней: ${c.total}<br>
+                ⚠️ Не прийшов: ${c.noShows}
+            </div>
+
+            <button
+                class="client-mini-btn client-eye-btn"
+                onclick="showClientHistory('${c.phone}')">
+                👁
+            </button>
+
+            <button
+                class="client-mini-btn client-delete-btn"
+                onclick="hideClientFromList('${phoneKey(c.phone)}')">
+                🗑️
+            </button>
+
+        </div>
+    `).join("");
+}
+
+window.hideClientFromList = function(key){
+
+    if(!confirm("Видалити клієнта зі списку? Бронювання залишаться.")){
+        return;
+    }
+
+    hiddenClients.push(key);
+    saveHiddenClients();
+    renderClientsList();
+}
 </style>
 </head>
     
@@ -500,7 +673,18 @@ if(localStorage.getItem("adminLogin") !== "true"){
             </button>
 
         </div>
-
+        <div class="clients-panel">
+        
+            <h2>👥 Клієнти</h2>
+        
+            <input
+                type="text"
+                id="clientSearch"
+                placeholder="Пошук за ім'ям або телефоном">
+        
+            <div id="clientsList"></div>
+        
+        </div>
     </div>
 
     <div class="side-panel">
@@ -736,7 +920,9 @@ onSnapshot(collection(db, "bookings"), (snap) => {
         id: d.id,
         ...d.data()
     }));
+
     renderDashboard(allBookings, allStatuses);
+    renderClientsList();
 });
 
 onSnapshot(collection(db, "pcStatuses"), (snap) => {
