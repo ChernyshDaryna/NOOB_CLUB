@@ -733,15 +733,32 @@ window.confirmBooking = async function(){
     }
 }
 
-window.adminLogin = function(){
+window.adminLogin = async function(){
     const email = document.getElementById("adminEmail").value.trim();
     const password = document.getElementById("adminPassword").value.trim();
 
-    if(email === "admin123@gmail.com" && password === "123"){
-        sessionStorage.setItem("admin", "true");
-        window.location.href = "admin.html";
-    }else{
-        alert("❌ Невірні дані");
+    try{
+        const adminRef = doc(db, "settings", "admin");
+        const adminSnap = await getDoc(adminRef);
+
+        let savedEmail = "admin123@gmail.com";
+        let savedPassword = "123";
+
+        if(adminSnap.exists()){
+            savedEmail = adminSnap.data().email;
+            savedPassword = adminSnap.data().password;
+        }
+
+        if(email === savedEmail && password === savedPassword){
+            localStorage.setItem("adminLogin", "true");
+            window.location.href = "admin.html";
+        }else{
+            alert("❌ Невірна пошта або пароль");
+        }
+
+    }catch(error){
+        console.error(error);
+        alert("❌ Помилка входу");
     }
 }
 
