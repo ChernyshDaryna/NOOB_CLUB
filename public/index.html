@@ -891,16 +891,6 @@ window.onclick = function(event){
         closeModal();
     }
 }
-function hidePhone(phone){
-
-    if(!phone) return "-";
-
-    const last4 = phone.slice(-4);
-
-    return "+380*****" + last4;
-}
-
-function renderPublicBookings(bookings){
 let publicBookings = [];
 let publicSortKey = "date";
 let publicSortAsc = true;
@@ -922,7 +912,6 @@ window.sortPublicBookings = function(key){
 }
 
 function renderPublicBookings(bookings){
-
     const box = document.getElementById("publicBookingsList");
 
     if(!box) return;
@@ -933,11 +922,9 @@ function renderPublicBookings(bookings){
         const av = a[publicSortKey] || "";
         const bv = b[publicSortKey] || "";
 
-        if(publicSortAsc){
-            return av.localeCompare(bv);
-        }else{
-            return bv.localeCompare(av);
-        }
+        return publicSortAsc
+            ? av.localeCompare(bv)
+            : bv.localeCompare(av);
     });
 
     if(sorted.length === 0){
@@ -963,9 +950,7 @@ function renderPublicBookings(bookings){
 }
 
 onSnapshot(collection(db, "bookings"), (snap) => {
-
     publicBookings = snap.docs.map(d => d.data());
-
     renderPublicBookings(publicBookings);
 });
 </script>
