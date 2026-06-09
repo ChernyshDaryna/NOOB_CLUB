@@ -6,6 +6,34 @@
 <title>NOOB PC</title>
 <link rel="stylesheet" href="style.css">
 <style>
+.table-wrap{
+    overflow-x:auto;
+}
+
+.booking-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#111827;
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.booking-table th,
+.booking-table td{
+    padding:12px;
+    border-bottom:1px solid #1e3a8a;
+    text-align:left;
+}
+
+.booking-table th{
+    color:#60a5fa;
+    background:#0f172a;
+    cursor:pointer;
+}
+
+.booking-table tr:hover{
+    background:#1e293b;
+}
 *{
     margin:0;
     padding:0;
@@ -518,7 +546,22 @@ input{
 </div>
 <section class="public-bookings">
     <h2>📋 Актуальні бронювання</h2>
-    <div id="publicBookingsList"></div>
+
+    <div class="table-wrap">
+        <table class="booking-table">
+            <thead>
+                <tr>
+                    <th onclick="sortPublicBookings('pc')">Місце ⬍</th>
+                    <th onclick="sortPublicBookings('name')">Ім'я ⬍</th>
+                    <th>Телефон</th>
+                    <th onclick="sortPublicBookings('date')">Дата ⬍</th>
+                    <th onclick="sortPublicBookings('time')">Час ⬍</th>
+                </tr>
+            </thead>
+
+            <tbody id="publicBookingsList"></tbody>
+        </table>
+    </div>
 </section>
 
 <script type="module">
@@ -858,48 +901,72 @@ function hidePhone(phone){
 }
 
 function renderPublicBookings(bookings){
+let publicBookings = [];
+let publicSortKey = "date";
+let publicSortAsc = true;
+
+function hidePhone(phone){
+    if(!phone) return "-";
+    return "+380*****" + phone.slice(-4);
+}
+
+window.sortPublicBookings = function(key){
+    if(publicSortKey === key){
+        publicSortAsc = !publicSortAsc;
+    }else{
+        publicSortKey = key;
+        publicSortAsc = true;
+    }
+
+    renderPublicBookings(publicBookings);
+}
+
+function renderPublicBookings(bookings){
 
     const box = document.getElementById("publicBookingsList");
 
     if(!box) return;
 
-    if(bookings.length === 0){
+    let sorted = [...bookings];
+
+    sorted.sort((a,b) => {
+        const av = a[publicSortKey] || "";
+        const bv = b[publicSortKey] || "";
+
+        if(publicSortAsc){
+            return av.localeCompare(bv);
+        }else{
+            return bv.localeCompare(av);
+        }
+    });
+
+    if(sorted.length === 0){
         box.innerHTML = `
-            <p style="text-align:center;color:#94a3b8;">
-                Бронювань поки немає
-            </p>
+            <tr>
+                <td colspan="5" style="text-align:center;color:#94a3b8;">
+                    Бронювань поки немає
+                </td>
+            </tr>
         `;
         return;
     }
 
-    box.innerHTML = `
-        <div class="public-booking-grid">
-            ${
-                bookings.map(b => `
-                    <div class="public-booking-card">
-                        <p><b>Місце:</b> ${b.pc || "-"}</p>
-                        <p><b>Ім'я:</b> ${b.name || "-"}</p>
-                        <p><b>Телефон:</b> ${hidePhone(b.phone)}</p>
-                        <p><b>Дата:</b> ${b.date || "-"}</p>
-                        <p><b>Час:</b> ${b.time || b.hour || "-"}</p>
-                    </div>
-                `).join("")
-            }
-        </div>
-    `;
+    box.innerHTML = sorted.map(b => `
+        <tr>
+            <td>${b.pc || "-"}</td>
+            <td>${b.name || "-"}</td>
+            <td>${hidePhone(b.phone)}</td>
+            <td>${b.date || "-"}</td>
+            <td>${b.time || b.hour || "-"}</td>
+        </tr>
+    `).join("");
 }
 
 onSnapshot(collection(db, "bookings"), (snap) => {
 
-    const bookings = snap.docs.map(d => d.data());
+    publicBookings = snap.docs.map(d => d.data());
 
-    bookings.sort((a,b) => {
-        const aTime = (a.date || "") + " " + (a.time || a.hour || "");
-        const bTime = (b.date || "") + " " + (b.time || b.hour || "");
-        return aTime.localeCompare(bTime);
-    });
-
-    renderPublicBookings(bookings);
+    renderPublicBookings(publicBookings);
 });
 </script>
 
