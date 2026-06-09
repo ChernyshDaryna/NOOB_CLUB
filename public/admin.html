@@ -335,7 +335,7 @@ select{
 </head>
     
 <script>
-if(sessionStorage.getItem("admin") !== "true"){
+if(localStorage.getItem("adminLogin") !== "true"){
     window.location.href = "index.html";
 }
 </script>
@@ -351,8 +351,6 @@ if(sessionStorage.getItem("admin") !== "true"){
     <div id="dashboard"></div>
 
     <div class="side-panel">
-
-        <div class="booking">
             
         <div class="price-box">
 
@@ -415,6 +413,25 @@ if(sessionStorage.getItem("admin") !== "true"){
             </div>
 
         </div>
+        <div class="admin-settings">
+
+    <h2>⚙️ Налаштування входу</h2>
+
+    <input
+        type="email"
+        id="newAdminEmail"
+        placeholder="Нова пошта">
+
+    <input
+        type="password"
+        id="newAdminPassword"
+        placeholder="Новий пароль">
+
+    <button onclick="saveAdminData()">
+        Зберегти пошту і пароль
+    </button>
+
+</div>
     </div>
 
 </div>
@@ -542,7 +559,7 @@ document
 .getElementById("logoutBtn")
 .addEventListener("click", () => {
 
-    sessionStorage.removeItem("admin");
+    localStorage.removeItem("adminLogin");
 
     window.location.href = "index.html";
 
@@ -566,9 +583,6 @@ onSnapshot(collection(db, "pcStatuses"), (snap) => {
     renderDashboard(allBookings, allStatuses);
 });
 
-window.addEventListener("beforeunload", () => {
-    sessionStorage.removeItem("admin");
-});
 </script>
 
 </body>
