@@ -32,13 +32,30 @@
 }
 
 .booking-item{
-    position:relative;
     background:#111827;
     border:1px solid #1d4ed8;
     border-radius:12px;
-    padding:10px 45px 10px 10px;
+    padding:10px;
     margin-bottom:8px;
     font-size:13px;
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+.booking-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:5px;
+}
+
+.icon-btn{
+    width:34px;
+    height:34px;
+    padding:0;
+    margin:0;
+    border-radius:50%;
 }
 #dashboard{
     display:grid;
@@ -531,107 +548,58 @@ select{
 .client-eye-btn:hover{
     background:#3b82f6;
 }
-let hiddenClients = JSON.parse(localStorage.getItem("hiddenClients") || "[]");
 
-function saveHiddenClients(){
-    localStorage.setItem("hiddenClients", JSON.stringify(hiddenClients));
+.bottom-admin-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-top:25px;
 }
 
-function renderClientsList(){
-
-    const box = document.getElementById("clientsList");
-    const search = document.getElementById("clientSearch");
-
-    if(!box) return;
-
-    const searchText = search ? search.value.toLowerCase().trim() : "";
-
-    const clientsMap = {};
-
-    allBookings.forEach(b => {
-        if(!b.phone) return;
-
-        const key = phoneKey(b.phone);
-
-        if(hiddenClients.includes(key)) return;
-
-        if(!clientsMap[key]){
-            clientsMap[key] = {
-                name: b.name || "-",
-                phone: b.phone,
-                total: 0,
-                noShows: 0
-            };
-        }
-
-        clientsMap[key].total++;
-
-        if(b.status === "no_show"){
-            clientsMap[key].noShows++;
-        }
-    });
-    
-setTimeout(() => {
-    const search = document.getElementById("clientSearch");
-
-    if(search){
-        search.addEventListener("input", renderClientsList);
-    }
-}, 500);
-    
-    let clients = Object.values(clientsMap);
-
-    clients = clients.filter(c => {
-        return (
-            c.name.toLowerCase().includes(searchText) ||
-            c.phone.toLowerCase().includes(searchText)
-        );
-    });
-
-    if(clients.length === 0){
-        box.innerHTML = `
-            <p style="text-align:center;color:#94a3b8;">
-                Клієнтів немає
-            </p>
-        `;
-        return;
-    }
-
-    box.innerHTML = clients.map(c => `
-        <div class="client-card">
-
-            <div class="client-info">
-                <b>${c.name}</b><br>
-                📞 ${c.phone}<br>
-                📋 Броней: ${c.total}<br>
-                ⚠️ Не прийшов: ${c.noShows}
-            </div>
-
-            <button
-                class="client-mini-btn client-eye-btn"
-                onclick="showClientHistory('${c.phone}')">
-                👁
-            </button>
-
-            <button
-                class="client-mini-btn client-delete-btn"
-                onclick="hideClientFromList('${phoneKey(c.phone)}')">
-                🗑️
-            </button>
-
-        </div>
-    `).join("");
+.admin-settings,
+.suspicious-panel{
+    background:linear-gradient(145deg,#0f172a,#0b1220);
+    border:2px solid #2563eb;
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 0 20px rgba(59,130,246,0.25);
 }
 
-window.hideClientFromList = function(key){
+.admin-settings button{
+    width:auto;
+    min-width:170px;
+    display:block;
+    margin:10px auto 0;
+    padding:12px 22px;
+}
 
-    if(!confirm("Видалити клієнта зі списку? Бронювання залишаться.")){
-        return;
+.suspicious-card{
+    background:#111827;
+    border:1px solid #f59e0b;
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:10px;
+    font-size:13px;
+}
+
+.suspicious-actions{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+}
+
+.suspicious-actions button{
+    width:38px;
+    height:38px;
+    padding:0;
+    margin:0;
+    border-radius:50%;
+}
+
+@media(max-width:900px){
+    .bottom-admin-grid{
+        grid-template-columns:1fr;
     }
-
-    hiddenClients.push(key);
-    saveHiddenClients();
-    renderClientsList();
 }
 </style>
 </head>
@@ -654,37 +622,38 @@ if(localStorage.getItem("adminLogin") !== "true"){
 
         <div id="dashboard"></div>
 
-        <div class="admin-settings">
-
-            <h2>⚙️ Налаштування входу</h2>
-
-            <input
-                type="email"
-                id="newAdminEmail"
-                placeholder="Нова пошта">
-
-            <input
-                type="password"
-                id="newAdminPassword"
-                placeholder="Новий пароль">
-
-            <button onclick="saveAdminData()">
-                Зберегти пошту і пароль
-            </button>
-
+        <div class="bottom-admin-grid">
+        
+            <div class="admin-settings">
+        
+                <h2>⚙️ Налаштування входу</h2>
+        
+                <input
+                    type="email"
+                    id="newAdminEmail"
+                    placeholder="Нова пошта">
+        
+                <input
+                    type="password"
+                    id="newAdminPassword"
+                    placeholder="Новий пароль">
+        
+                <button onclick="saveAdminData()">
+                    Зберегти пошту і пароль
+                </button>
+        
+            </div>
+        
+            <div class="suspicious-panel">
+        
+                <h2>⚠️ Підозрілі клієнти</h2>
+        
+                <div id="suspiciousUsersList"></div>
+        
+            </div>
+        
         </div>
-        <div class="clients-panel">
-        
-            <h2>👥 Клієнти</h2>
-        
-            <input
-                type="text"
-                id="clientSearch"
-                placeholder="Пошук за ім'ям або телефоном">
-        
-            <div id="clientsList"></div>
-        
-        </div>
+
     </div>
 
     <div class="side-panel">
@@ -796,64 +765,108 @@ function renderDashboard(bookings, statuses) {
 
         const pcBookings = bookings
             .filter(b => b.pc === pc)
-            .sort((a, b) => {
-                const aTime = (a.date || "") + " " + (a.time || b.hour || "");
-                const bTime = (b.date || "") + " " + (b.time || b.hour || "");
-                return aTime.localeCompare(bTime);
+            .sort((a,b) => {
+
+                const now = new Date();
+
+                const aDate = new Date(
+                    (a.date || "") + "T" +
+                    (a.time || a.hour || "00:00")
+                );
+
+                const bDate = new Date(
+                    (b.date || "") + "T" +
+                    (b.time || b.hour || "00:00")
+                );
+
+                return (aDate - now) - (bDate - now);
             });
 
         const status = statuses[pc] || "free";
-        const isBusy = status === "busy";
 
         dashboard.innerHTML += `
-            <div class="pc-card ${isBusy ? "busy" : "free"}">
+            <div class="pc-card ${status}">
 
                 <div class="pc-title">
                     ${pc.includes("PS5") ? "🎮" : "💻"} ${pc}
                 </div>
 
-                <div class="pc-status ${isBusy ? "busy" : "free"}">
-                    ${isBusy ? "● Зайнятий зараз" : "● Вільний зараз"}
+                <div class="pc-status ${status}">
+                    ${status === "busy"
+                        ? "● Зайнятий зараз"
+                        : "● Вільний зараз"}
                 </div>
 
                 <div class="booking-list">
+
                     ${
-                        pcBookings.length > 0
+                        pcBookings.length
                         ? pcBookings.map(b => `
+
                             <div class="booking-item">
+
                                 <div>
                                     👤 ${b.name || "-"}<br>
                                     📞 ${b.phone || "-"}<br>
                                     📅 ${b.date || "-"}<br>
-                                    ⏰ ${b.time || b.hour || "-"}
-                                    📌 Статус: ${b.status === "no_show" ? "Не прийшов" : "Активна"}
+                                    ⏰ ${b.time || b.hour || "-"}<br>
+                                    📌 ${
+                                        b.status === "no_show"
+                                        ? "Не прийшов"
+                                        : "Активна"
+                                    }
                                 </div>
 
-                                <button
-                                    class="trash-btn"
-                                    onclick="deleteBooking('${b.id}')">
-                                    🗑️
-                                </button>
-                                <button class="icon-btn warning-btn" onclick="markNoShow('${b.id}')">
-                                    ⚠️
-                                </button>
-                                <button class="icon-btn eye-btn" onclick="showClientHistory('${b.phone}')">
-                                    👁
-                                </button>
+                                <div class="booking-actions">
+
+                                    <button
+                                        class="icon-btn delete-btn"
+                                        onclick="deleteBooking('${b.id}')">
+
+                                        🗑️
+
+                                    </button>
+
+                                    <button
+                                        class="icon-btn warning-btn"
+                                        onclick="markNoShow('${b.id}')">
+
+                                        ⚠️
+
+                                    </button>
+
+                                    <button
+                                        class="icon-btn eye-btn"
+                                        onclick="showClientHistory('${b.phone}')">
+
+                                        👁
+
+                                    </button>
+
+                                </div>
+
                             </div>
+
                         `).join("")
-                        : `<div class="booking-item">Броней немає</div>`
+                        : "<div class='booking-item'>Броней немає</div>"
                     }
+
                 </div>
 
                 <div class="card-actions">
+
                     <button onclick="setBusy('${pc}')">
                         Зайнятий
                     </button>
 
-                    <button class="free-btn" onclick="setFree('${pc}')">
+                    <button
+                        class="free-btn"
+                        onclick="setFree('${pc}')">
+
                         Вільний
+
                     </button>
+
                 </div>
 
             </div>
@@ -922,7 +935,7 @@ onSnapshot(collection(db, "bookings"), (snap) => {
     }));
 
     renderDashboard(allBookings, allStatuses);
-    renderClientsList();
+    renderSuspiciousUsers();
 });
 
 onSnapshot(collection(db, "pcStatuses"), (snap) => {
@@ -933,6 +946,8 @@ onSnapshot(collection(db, "pcStatuses"), (snap) => {
     });
 
     renderDashboard(allBookings, allStatuses);
+renderSuspiciousUsers();
+                                         
 });
 window.saveAdminData = async function(){
 
@@ -1052,6 +1067,79 @@ window.blockClientForMonth = async function(){
         console.error(error);
         alert("❌ Не вдалося заблокувати клієнта");
     }
+}
+let hiddenSuspiciousUsers = JSON.parse(localStorage.getItem("hiddenSuspiciousUsers") || "[]");
+
+function saveHiddenSuspiciousUsers(){
+    localStorage.setItem("hiddenSuspiciousUsers", JSON.stringify(hiddenSuspiciousUsers));
+}
+
+function renderSuspiciousUsers(){
+
+    const box = document.getElementById("suspiciousUsersList");
+
+    if(!box) return;
+
+    const users = {};
+
+    allBookings.forEach(b => {
+        if(!b.phone) return;
+        if(b.status !== "no_show") return;
+
+        const key = phoneKey(b.phone);
+
+        if(hiddenSuspiciousUsers.includes(key)) return;
+
+        if(!users[key]){
+            users[key] = {
+                name: b.name || "-",
+                phone: b.phone,
+                noShows: 0
+            };
+        }
+
+        users[key].noShows++;
+    });
+
+    const list = Object.values(users);
+
+    if(list.length === 0){
+        box.innerHTML = `
+            <p style="color:#94a3b8;text-align:center;">
+                Підозрілих клієнтів немає
+            </p>
+        `;
+        return;
+    }
+
+    box.innerHTML = list.map(u => `
+        <div class="suspicious-card">
+            <b>${u.name}</b><br>
+            📞 ${u.phone}<br>
+            ⚠️ Не прийшов: ${u.noShows} раз(и)
+
+            <div class="suspicious-actions">
+                <button class="eye-btn" onclick="showClientHistory('${u.phone}')">
+                    👁
+                </button>
+
+                <button class="delete-btn" onclick="hideSuspiciousUser('${phoneKey(u.phone)}')">
+                    🗑️
+                </button>
+            </div>
+        </div>
+    `).join("");
+}
+
+window.hideSuspiciousUser = function(key){
+
+    if(!confirm("Прибрати клієнта зі списку підозрілих? Броні залишаться.")){
+        return;
+    }
+
+    hiddenSuspiciousUsers.push(key);
+    saveHiddenSuspiciousUsers();
+    renderSuspiciousUsers();
 }
 </script>
 
