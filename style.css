@@ -381,3 +381,46 @@ select{
     background:#1e293b;
     color:white;
 }
+
+.main-panel{
+    flex:2;
+}
+
+.admin-settings{
+    background:linear-gradient(145deg,#0f172a,#0b1220);
+    border:2px solid #2563eb;
+    border-radius:20px;
+    padding:20px;
+    margin-top:25px;
+
+    box-shadow:
+        0 0 15px rgba(59,130,246,0.25),
+        inset 0 0 15px rgba(37,99,235,0.08);
+}
+
+.admin-settings h2{
+    color:#60a5fa;
+    text-align:center;
+    margin-bottom:15px;
+
+    text-shadow:0 0 10px #2563eb;
+}
+
+.admin-settings input{
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#1e293b;
+    color:white;
+}
+
+.admin-settings input:focus{
+    outline:none;
+
+    box-shadow:
+        0 0 10px #2563eb;
+}
