@@ -7,7 +7,39 @@
 <title>NOOB ADMIN</title>
 
 <style>
+.main-panel{
+    min-width:0;
+}
 
+.trash-btn{
+    position:absolute;
+    top:8px;
+    right:8px;
+
+    width:32px;
+    height:32px;
+    padding:0;
+    margin:0;
+
+    border-radius:50%;
+    background:#dc2626;
+    font-size:15px;
+}
+
+.trash-btn:hover{
+    background:#ef4444;
+    transform:scale(1.1);
+}
+
+.booking-item{
+    position:relative;
+    background:#111827;
+    border:1px solid #1d4ed8;
+    border-radius:12px;
+    padding:10px 45px 10px 10px;
+    margin-bottom:8px;
+    font-size:13px;
+}
 #dashboard{
     display:grid;
     grid-template-columns:repeat(4, 1fr);
@@ -348,10 +380,34 @@ if(localStorage.getItem("adminLogin") !== "true"){
 </button>
 <div class="wrapper">
 
-    <div id="dashboard"></div>
+    <div class="main-panel">
+
+        <div id="dashboard"></div>
+
+        <div class="admin-settings">
+
+            <h2>⚙️ Налаштування входу</h2>
+
+            <input
+                type="email"
+                id="newAdminEmail"
+                placeholder="Нова пошта">
+
+            <input
+                type="password"
+                id="newAdminPassword"
+                placeholder="Новий пароль">
+
+            <button onclick="saveAdminData()">
+                Зберегти пошту і пароль
+            </button>
+
+        </div>
+
+    </div>
 
     <div class="side-panel">
-            
+        
         <div class="price-box">
 
             <h2>💰 Прайс</h2>
@@ -413,26 +469,6 @@ if(localStorage.getItem("adminLogin") !== "true"){
             </div>
 
         </div>
-        <div class="admin-settings">
-
-    <h2>⚙️ Налаштування входу</h2>
-
-    <input
-        type="email"
-        id="newAdminEmail"
-        placeholder="Нова пошта">
-
-    <input
-        type="password"
-        id="newAdminPassword"
-        placeholder="Новий пароль">
-
-    <button onclick="saveAdminData()">
-        Зберегти пошту і пароль
-    </button>
-
-</div>
-    </div>
 
 </div>
 
@@ -465,8 +501,8 @@ function renderDashboard(bookings, statuses) {
         const pcBookings = bookings
             .filter(b => b.pc === pc)
             .sort((a, b) => {
-                const aTime = (a.date || "") + " " + (a.time || "");
-                const bTime = (b.date || "") + " " + (b.time || "");
+                const aTime = (a.date || "") + " " + (a.time || b.hour || "");
+                const bTime = (b.date || "") + " " + (b.time || b.hour || "");
                 return aTime.localeCompare(bTime);
             });
 
@@ -489,21 +525,23 @@ function renderDashboard(bookings, statuses) {
                         pcBookings.length > 0
                         ? pcBookings.map(b => `
                             <div class="booking-item">
-                                👤 ${b.name || "-"}<br>
-                                📞 ${b.phone || "-"}<br>
-                                📅 ${b.date || "-"}<br>
-                                ⏰ ${b.time || b.hour || "-"}
+                                <div>
+                                    👤 ${b.name || "-"}<br>
+                                    📞 ${b.phone || "-"}<br>
+                                    📅 ${b.date || "-"}<br>
+                                    ⏰ ${b.time || b.hour || "-"}
+                                </div>
+
+                                <button
+                                    class="trash-btn"
+                                    onclick="deleteBooking('${b.id}')">
+                                    🗑️
+                                </button>
                             </div>
-                           <button
-                                class="trash-btn"
-                                onclick="deleteBooking('${b.id}')">
-
-                                🗑️
-
-                            </button>
-
-                        </div>
-                    `)
+                        `).join("")
+                        : `<div class="booking-item">Броней немає</div>`
+                    }
+                </div>
 
                 <div class="card-actions">
                     <button onclick="setBusy('${pc}')">
@@ -519,7 +557,6 @@ function renderDashboard(bookings, statuses) {
         `;
     });
 }
-
 /* =======================
    УДАЛЕНИЕ БРОНИ
 ======================= */
