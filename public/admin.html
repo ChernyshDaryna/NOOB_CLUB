@@ -477,78 +477,19 @@ select{
     padding:10px;
     margin-bottom:10px;
 }
-.clients-panel{
-    margin-top:25px;
-    background:linear-gradient(145deg,#0f172a,#0b1220);
-    border:2px solid #2563eb;
-    border-radius:20px;
-    padding:22px;
-    box-shadow:0 0 20px rgba(59,130,246,0.25);
+.suspicious-panel{
+    max-height:400px;
+    overflow-y:auto;
 }
 
-.clients-panel h2{
-    color:#60a5fa;
-    text-align:center;
-    margin-bottom:18px;
-    text-shadow:0 0 10px #2563eb;
+.suspicious-panel::-webkit-scrollbar{
+    width:6px;
 }
 
-.clients-panel input{
-    width:100%;
-    padding:13px;
-    margin-bottom:15px;
-    border:none;
-    border-radius:12px;
-    background:#1e293b;
-    color:white;
+.suspicious-panel::-webkit-scrollbar-thumb{
+    background:#f59e0b;
+    border-radius:10px;
 }
-
-.client-card{
-    background:#111827;
-    border:1px solid #1d4ed8;
-    border-radius:14px;
-    padding:12px;
-    margin-bottom:10px;
-    display:grid;
-    grid-template-columns:1fr auto auto;
-    gap:8px;
-    align-items:center;
-}
-
-.client-info{
-    font-size:13px;
-    line-height:1.5;
-}
-
-.client-info b{
-    color:#60a5fa;
-}
-
-.client-mini-btn{
-    width:34px;
-    height:34px;
-    padding:0;
-    margin:0;
-    border-radius:50%;
-    font-size:15px;
-}
-
-.client-delete-btn{
-    background:#dc2626;
-}
-
-.client-eye-btn{
-    background:#2563eb;
-}
-
-.client-delete-btn:hover{
-    background:#ef4444;
-}
-
-.client-eye-btn:hover{
-    background:#3b82f6;
-}
-
 .bottom-admin-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
