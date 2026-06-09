@@ -439,11 +439,12 @@ if(localStorage.getItem("adminLogin") !== "true"){
 <script type="module">
 import { db } from "./firebase.js";
 import { 
-    collection, 
-    onSnapshot, 
-    doc, 
-    deleteDoc, 
-    setDoc 
+    collection,
+    onSnapshot,
+    doc,
+    deleteDoc,
+    setDoc,
+    getDoc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const bookingsCollection = collection(db, "bookings");
@@ -582,7 +583,32 @@ onSnapshot(collection(db, "pcStatuses"), (snap) => {
 
     renderDashboard(allBookings, allStatuses);
 });
+window.saveAdminData = async function(){
 
+    const email = document.getElementById("newAdminEmail").value.trim();
+    const password = document.getElementById("newAdminPassword").value.trim();
+
+    if(!email || !password){
+        alert("Заповніть нову пошту і пароль");
+        return;
+    }
+
+    try{
+        await setDoc(doc(db, "settings", "admin"), {
+            email: email,
+            password: password
+        });
+
+        alert("✅ Дані входу оновлено");
+
+        document.getElementById("newAdminEmail").value = "";
+        document.getElementById("newAdminPassword").value = "";
+
+    }catch(error){
+        console.error("Помилка збереження входу:", error);
+        alert("❌ Не вдалося зберегти нові дані");
+    }
+}
 </script>
 
 </body>
