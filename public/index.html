@@ -478,6 +478,10 @@ input{
         📷 Instagram NOOB GAME ZONE
     </a>
 </div>
+<section class="public-bookings">
+    <h2>📋 Актуальні бронювання</h2>
+    <div id="publicBookingsList"></div>
+</section>
 
 <script type="module">
 import { db } from "./firebase.js";
@@ -734,6 +738,7 @@ window.confirmBooking = async function(){
 }
 
 window.adminLogin = async function(){
+
     const email = document.getElementById("adminEmail").value.trim();
     const password = document.getElementById("adminPassword").value.trim();
 
@@ -757,11 +762,10 @@ window.adminLogin = async function(){
         }
 
     }catch(error){
-        console.error(error);
+        console.error("Помилка входу:", error);
         alert("❌ Помилка входу");
     }
 }
-
 function isBusy(pc){
     return localBusyPCs.includes(pc);
 }
@@ -806,6 +810,59 @@ window.onclick = function(event){
         closeModal();
     }
 }
+function hidePhone(phone){
+
+    if(!phone) return "-";
+
+    const last4 = phone.slice(-4);
+
+    return "+380*****" + last4;
+}
+
+function renderPublicBookings(bookings){
+
+    const box = document.getElementById("publicBookingsList");
+
+    if(!box) return;
+
+    if(bookings.length === 0){
+        box.innerHTML = `
+            <p style="text-align:center;color:#94a3b8;">
+                Бронювань поки немає
+            </p>
+        `;
+        return;
+    }
+
+    box.innerHTML = `
+        <div class="public-booking-grid">
+            ${
+                bookings.map(b => `
+                    <div class="public-booking-card">
+                        <p><b>Місце:</b> ${b.pc || "-"}</p>
+                        <p><b>Ім'я:</b> ${b.name || "-"}</p>
+                        <p><b>Телефон:</b> ${hidePhone(b.phone)}</p>
+                        <p><b>Дата:</b> ${b.date || "-"}</p>
+                        <p><b>Час:</b> ${b.time || b.hour || "-"}</p>
+                    </div>
+                `).join("")
+            }
+        </div>
+    `;
+}
+
+onSnapshot(collection(db, "bookings"), (snap) => {
+
+    const bookings = snap.docs.map(d => d.data());
+
+    bookings.sort((a,b) => {
+        const aTime = (a.date || "") + " " + (a.time || a.hour || "");
+        const bTime = (b.date || "") + " " + (b.time || b.hour || "");
+        return aTime.localeCompare(bTime);
+    });
+
+    renderPublicBookings(bookings);
+});
 </script>
 
 </body>
