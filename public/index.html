@@ -778,7 +778,18 @@ window.confirmBooking = async function(){
         alert("Введіть номер у форматі +380XXXXXXXXX");
         return;
     }
+const blockedRef = doc(db, "blockedUsers", phone.replace(/\D/g, ""));
+const blockedSnap = await getDoc(blockedRef);
 
+if(blockedSnap.exists()){
+    const data = blockedSnap.data();
+    const blockedUntil = new Date(data.blockedUntil);
+
+    if(blockedUntil > new Date()){
+        alert("🚫 Ви занадто багато разів не приходили по броні. На жаль, цього місяця ви не можете забронювати місце.");
+        return;
+    }
+}
     const time = `${selectedHour}:${selectedMinute}`;
     const fullTime = new Date(selectedDate);
     fullTime.setHours(Number(selectedHour), Number(selectedMinute), 0, 0);
