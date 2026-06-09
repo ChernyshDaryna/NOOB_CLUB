@@ -1084,13 +1084,6 @@ function renderSuspiciousUsers(){
     const searchText = searchInput ? searchInput.value.replace(/\D/g, "") : "";
     if(!box) return;
 
-    const searchInput = document.getElementById("suspiciousSearch");
-
-    const searchText =
-        searchInput
-        ? searchInput.value.replace(/\D/g, "")
-        : "";
-
     const users = {};
 
     allBookings.forEach(b => {
