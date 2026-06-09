@@ -196,7 +196,15 @@
     background:#dc2626;
 
 }
-
+#suspiciousSearch{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+    border:none;
+    border-radius:12px;
+    background:#1e293b;
+    color:white;
+}
 #logoutBtn:hover{
 
     background:#ef4444;
@@ -1037,7 +1045,8 @@ function saveHiddenSuspiciousUsers(){
 function renderSuspiciousUsers(){
 
     const box = document.getElementById("suspiciousUsersList");
-
+    const searchInput = document.getElementById("suspiciousSearch");
+    const searchText = searchInput ? searchInput.value.replace(/\D/g, "") : "";
     if(!box) return;
 
     const searchInput = document.getElementById("suspiciousSearch");
@@ -1073,7 +1082,9 @@ function renderSuspiciousUsers(){
     });
 
     let list = Object.values(users);
-
+    if(searchText){
+        list = list.filter(u => phoneKey(u.phone).includes(searchText));
+    }
     if(searchText){
 
         list = list.filter(u =>
@@ -1125,7 +1136,13 @@ function renderSuspiciousUsers(){
         </div>
     `).join("");
 }
+const suspiciousSearch = document.getElementById("suspiciousSearch");
 
+if(suspiciousSearch){
+    suspiciousSearch.addEventListener("input", () => {
+        renderSuspiciousUsers();
+    });
+}
 window.hideSuspiciousUser = function(key){
 
     if(!confirm("Прибрати клієнта зі списку підозрілих? Броні залишаться.")){
