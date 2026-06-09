@@ -494,10 +494,16 @@ function renderDashboard(bookings, statuses) {
                                 📅 ${b.date || "-"}<br>
                                 ⏰ ${b.time || b.hour || "-"}
                             </div>
-                        `).join("")
-                        : `<div class="booking-item">Броней немає</div>`
-                    }
-                </div>
+                           <button
+                                class="trash-btn"
+                                onclick="deleteBooking('${b.id}')">
+
+                                🗑️
+
+                            </button>
+
+                        </div>
+                    `)
 
                 <div class="card-actions">
                     <button onclick="setBusy('${pc}')">
@@ -570,7 +576,10 @@ let allBookings = [];
 let allStatuses = {};
 
 onSnapshot(collection(db, "bookings"), (snap) => {
-    allBookings = snap.docs.map(d => d.data());
+    allBookings = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+    }));
     renderDashboard(allBookings, allStatuses);
 });
 
