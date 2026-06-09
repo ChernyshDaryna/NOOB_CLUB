@@ -362,7 +362,104 @@ select{
         grid-template-columns:1fr;
     }
 }
+.admin-settings{
+    margin-top:25px;
+    background:linear-gradient(145deg,#0f172a,#0b1220);
+    border:2px solid #2563eb;
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 0 20px rgba(59,130,246,0.25);
+}
 
+.admin-settings h2{
+    color:#60a5fa;
+    text-align:center;
+    margin-bottom:18px;
+    text-shadow:0 0 10px #2563eb;
+}
+
+.admin-settings input{
+    width:100%;
+    padding:13px;
+    margin-bottom:12px;
+    border:none;
+    border-radius:12px;
+    background:#1e293b;
+    color:white;
+}
+
+.admin-settings button{
+    width:auto;
+    display:block;
+    margin:10px auto 0;
+    padding:12px 25px;
+    border-radius:14px;
+}
+
+.booking-actions{
+    display:flex;
+    gap:6px;
+    margin-top:8px;
+}
+
+.icon-btn{
+    width:34px;
+    height:34px;
+    padding:0;
+    margin:0;
+    border-radius:50%;
+    font-size:15px;
+}
+
+.warning-btn{
+    background:#f59e0b;
+}
+
+.warning-btn:hover{
+    background:#fbbf24;
+}
+
+.eye-btn{
+    background:#2563eb;
+}
+
+.eye-btn:hover{
+    background:#3b82f6;
+}
+
+.client-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.8);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.client-modal-content{
+    width:90%;
+    max-width:520px;
+    background:#0f172a;
+    border:2px solid #2563eb;
+    border-radius:20px;
+    padding:25px;
+    max-height:85vh;
+    overflow-y:auto;
+}
+
+.client-modal-content h2{
+    color:#60a5fa;
+    margin-bottom:15px;
+}
+
+.history-item{
+    background:#111827;
+    border:1px solid #1d4ed8;
+    border-radius:12px;
+    padding:10px;
+    margin-bottom:10px;
+}
 </style>
 </head>
     
@@ -471,7 +568,21 @@ if(localStorage.getItem("adminLogin") !== "true"){
         </div>
     </div>
 </div>
+<div class="client-modal" id="clientModal">
+    <div class="client-modal-content">
+        <h2>👁 Історія клієнта</h2>
 
+        <div id="clientHistory"></div>
+
+        <button onclick="blockClientForMonth()" class="warning-btn">
+            Заборонити бронювання на цей місяць
+        </button>
+
+        <button onclick="closeClientModal()" class="delete-btn">
+            Закрити
+        </button>
+    </div>
+</div>
 <script type="module">
 import { db } from "./firebase.js";
 import { 
@@ -480,7 +591,8 @@ import {
     doc,
     deleteDoc,
     setDoc,
-    getDoc
+    getDoc,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const bookingsCollection = collection(db, "bookings");
@@ -530,12 +642,19 @@ function renderDashboard(bookings, statuses) {
                                     📞 ${b.phone || "-"}<br>
                                     📅 ${b.date || "-"}<br>
                                     ⏰ ${b.time || b.hour || "-"}
+                                    📌 Статус: ${b.status === "no_show" ? "Не прийшов" : "Активна"}
                                 </div>
 
                                 <button
                                     class="trash-btn"
                                     onclick="deleteBooking('${b.id}')">
                                     🗑️
+                                </button>
+                                <button class="icon-btn warning-btn" onclick="markNoShow('${b.id}')">
+                                    ⚠️
+                                </button>
+                                <button class="icon-btn eye-btn" onclick="showClientHistory('${b.phone}')">
+                                    👁
                                 </button>
                             </div>
                         `).join("")
@@ -653,6 +772,99 @@ window.saveAdminData = async function(){
     }catch(error){
         console.error("Помилка збереження входу:", error);
         alert("❌ Не вдалося зберегти нові дані");
+    }
+}
+let selectedClientPhone = "";
+
+function phoneKey(phone){
+    return phone.replace(/\D/g, "");
+}
+
+window.markNoShow = async function(id){
+
+    if(!confirm("Позначити, що клієнт не прийшов по цій броні?")){
+        return;
+    }
+
+    try{
+        await updateDoc(doc(db, "bookings", id), {
+            status: "no_show"
+        });
+
+        alert("⚠️ Бронь позначено як 'не прийшов'");
+    }catch(error){
+        console.error(error);
+        alert("❌ Не вдалося оновити статус");
+    }
+}
+
+window.showClientHistory = function(phone){
+
+    selectedClientPhone = phone;
+
+    const box = document.getElementById("clientHistory");
+
+    const clientBookings = allBookings.filter(b => b.phone === phone);
+
+    const noShows = clientBookings.filter(b => b.status === "no_show").length;
+
+    if(clientBookings.length === 0){
+        box.innerHTML = "<p>Історії бронювань немає</p>";
+    }else{
+        box.innerHTML = `
+            <p style="margin-bottom:15px;">
+                📞 Телефон: ${phone}<br>
+                ⚠️ Не прийшов: ${noShows} раз(и)
+            </p>
+
+            ${
+                clientBookings.map(b => `
+                    <div class="history-item">
+                        💻 ${b.pc || "-"}<br>
+                        📅 ${b.date || "-"}<br>
+                        ⏰ ${b.time || b.hour || "-"}<br>
+                        📌 ${b.status === "no_show" ? "Не прийшов" : "Активна / прийшов"}
+                    </div>
+                `).join("")
+            }
+        `;
+    }
+
+    document.getElementById("clientModal").style.display = "flex";
+}
+
+window.closeClientModal = function(){
+    document.getElementById("clientModal").style.display = "none";
+}
+
+window.blockClientForMonth = async function(){
+
+    if(!selectedClientPhone){
+        alert("Клієнта не вибрано");
+        return;
+    }
+
+    if(!confirm("Заборонити цьому клієнту бронювання до кінця місяця?")){
+        return;
+    }
+
+    const now = new Date();
+    const blockedUntil = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    blockedUntil.setHours(23,59,59,999);
+
+    try{
+        await setDoc(doc(db, "blockedUsers", phoneKey(selectedClientPhone)), {
+            phone: selectedClientPhone,
+            blockedUntil: blockedUntil.toISOString(),
+            reason: "Багато разів не прийшов по броні"
+        });
+
+        alert("🚫 Клієнту заборонено бронювання до кінця місяця");
+        closeClientModal();
+
+    }catch(error){
+        console.error(error);
+        alert("❌ Не вдалося заблокувати клієнта");
     }
 }
 </script>
