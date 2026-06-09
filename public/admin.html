@@ -1145,13 +1145,21 @@ function renderSuspiciousUsers(){
         </div>
     `).join("");
 }
-const suspiciousSearch = document.getElementById("suspiciousSearch");
+setTimeout(() => {
 
-if(suspiciousSearch){
-    suspiciousSearch.addEventListener("input", () => {
-        renderSuspiciousUsers();
-    });
-}
+    const suspiciousSearch =
+        document.getElementById("suspiciousSearch");
+
+    if(suspiciousSearch){
+
+        suspiciousSearch.addEventListener(
+            "input",
+            renderSuspiciousUsers
+        );
+
+    }
+
+}, 500);
 window.hideSuspiciousUser = function(key){
 
     if(!confirm("Прибрати клієнта зі списку підозрілих? Броні залишаться.")){
