@@ -407,10 +407,16 @@ select{
 
 .admin-settings button{
     width:auto;
+    min-width:110px;
+    max-width:160px;
+
     display:block;
+
     margin:10px auto 0;
-    padding:12px 25px;
-    border-radius:14px;
+
+    padding:8px 14px;
+
+    font-size:14px;
 }
 
 .booking-actions{
@@ -1031,17 +1037,22 @@ function saveHiddenSuspiciousUsers(){
 function renderSuspiciousUsers(){
 
     const box = document.getElementById("suspiciousUsersList");
-    let list = Object.values(users);
-    
-    if(searchText){
-        list = list.filter(u => phoneKey(u.phone).includes(searchText));
-    }
+
     if(!box) return;
+
+    const searchInput = document.getElementById("suspiciousSearch");
+
+    const searchText =
+        searchInput
+        ? searchInput.value.replace(/\D/g, "")
+        : "";
 
     const users = {};
 
     allBookings.forEach(b => {
+
         if(!b.phone) return;
+
         if(b.status !== "no_show") return;
 
         const key = phoneKey(b.phone);
@@ -1049,42 +1060,68 @@ function renderSuspiciousUsers(){
         if(hiddenSuspiciousUsers.includes(key)) return;
 
         if(!users[key]){
+
             users[key] = {
                 name: b.name || "-",
                 phone: b.phone,
                 noShows: 0
             };
+
         }
 
         users[key].noShows++;
     });
 
-    const list = Object.values(users);
+    let list = Object.values(users);
+
+    if(searchText){
+
+        list = list.filter(u =>
+            phoneKey(u.phone).includes(searchText)
+        );
+
+    }
 
     if(list.length === 0){
+
         box.innerHTML = `
             <p style="color:#94a3b8;text-align:center;">
-                Підозрілих клієнтів немає
+                Нічого не знайдено
             </p>
         `;
+
         return;
     }
 
     box.innerHTML = list.map(u => `
         <div class="suspicious-card">
+
             <b>${u.name}</b><br>
+
             📞 ${u.phone}<br>
+
             ⚠️ Не прийшов: ${u.noShows} раз(и)
 
             <div class="suspicious-actions">
-                <button class="eye-btn" onclick="showClientHistory('${u.phone}')">
+
+                <button
+                    class="eye-btn"
+                    onclick="showClientHistory('${u.phone}')">
+
                     👁
+
                 </button>
 
-                <button class="delete-btn" onclick="hideSuspiciousUser('${phoneKey(u.phone)}')">
+                <button
+                    class="delete-btn"
+                    onclick="hideSuspiciousUser('${phoneKey(u.phone)}')">
+
                     🗑️
+
                 </button>
+
             </div>
+
         </div>
     `).join("");
 }
